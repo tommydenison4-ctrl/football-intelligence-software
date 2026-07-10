@@ -1,20 +1,12 @@
-ULM Football Analytics v2.1
+ULM Football Analytics v2.2
 
-This version restores the full filter set and fixes Projected Totals.
+Mobile slider fix:
+- Projected Totals slider now stacks vertically on phone screens.
+- Slider is full width with a larger touch target.
+- Desktop layout remains unchanged.
 
-Owner:
-- Sign in by email
-- Create/import projects
-- Publish/unpublish
-- Copy coach link
-
-Coach:
-- Opens published share link
-- No sign-in required
-- Read-only access
-- Can use all dashboard filters
-
-Deploy:
-1. Replace the existing index.html in the GitHub repository with this index.html.
+Update the live site:
+1. Replace index.html in the GitHub repository.
 2. Commit the change.
-3. Vercel will redeploy automatically.
+3. Vercel redeploys automatically.
+4. Refresh the phone browser or open a private tab.
