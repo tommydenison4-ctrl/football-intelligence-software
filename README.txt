@@ -1,16 +1,20 @@
-ULM Football Analytics V2 - Deploy Ready
+ULM Football Analytics v2.1
 
-This version is a complete static site.
+This version restores the full filter set and fixes Projected Totals.
 
-To test:
-1. Open index.html in a browser.
-2. Internet access is required because Supabase and CSV libraries load from CDN.
+Owner:
+- Sign in by email
+- Create/import projects
+- Publish/unpublish
+- Copy coach link
 
-To deploy on Vercel:
-1. Create a new GitHub repository.
-2. Upload index.html.
-3. Import the repository into Vercel.
-4. Deploy. No build settings or environment variables are required for this version.
-5. In Supabase Authentication > URL Configuration, add the Vercel URL as Site URL and Redirect URL.
+Coach:
+- Opens published share link
+- No sign-in required
+- Read-only access
+- Can use all dashboard filters
 
-The publishable Supabase key is embedded in the site. The secret key is not included.
+Deploy:
+1. Replace the existing index.html in the GitHub repository with this index.html.
+2. Commit the change.
+3. Vercel will redeploy automatically.
