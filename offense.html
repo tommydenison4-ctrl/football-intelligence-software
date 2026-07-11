@@ -69,6 +69,17 @@ button{background:var(--m);color:white;border:0;border-radius:8px;padding:10px 1
   .module-callout{margin:0 14px 12px;align-items:flex-start;flex-direction:column}
 }
 
+
+.public-notice{
+  margin:14px 28px 0;padding:11px 14px;background:#fff;border:1px solid var(--l);
+  border-left:5px solid var(--g);border-radius:10px;color:var(--u);font-size:12px
+}
+.public-error{
+  max-width:760px;margin:40px auto;background:#fff;border:1px solid var(--l);
+  border-left:6px solid var(--m);border-radius:14px;padding:22px
+}
+.public-error h2{margin-top:0;color:var(--m)}
+@media(max-width:700px){.public-notice{margin:10px 14px 0}}
 </style>
 </head>
 <body>
@@ -77,7 +88,7 @@ button{background:var(--m);color:white;border:0;border-radius:8px;padding:10px 1
 <img class="brand-logo" src="ulm_logo_official.png" alt="ULM logo">
 <div><div class="ey">ULM Football</div><h1>Offensive Analytics</h1><div>Advantage states · formations · field zones · situations</div></div>
 </div>
-<button id="signOut" class="hide">Sign out</button>
+
 </header>
 
 <nav class="workspace-nav" aria-label="Platform modules">
@@ -86,35 +97,15 @@ button{background:var(--m);color:white;border:0;border-radius:8px;padding:10px 1
   <a href="defense.html">Defensive Analytics</a>
   <a href="personnel.html">Player Portal</a>
   <a href="depth-chart.html">Depth Chart</a>
-</nav>
+</nav><div class="public-notice">Open staff access · Florida Atlantic loads automatically</div>
 
 
 <div id="status" class="status"><span>Loading...</span></div>
 
-<main id="rootMain">
-<section id="auth" class="auth hide">
-<h2>Owner Sign-In</h2>
-<input id="email" type="email" placeholder="Email address">
-<button id="sendLink">Email me a sign-in link</button>
-<div id="authMsg" class="note"></div>
-</section>
+<main id="rootMain" class="public-app">
 
-<section id="projectsView" class="hide">
-<div class="panel form">
-<h2>Create Project</h2>
-<div class="form-grid">
-<label>Project name<input id="pname"></label>
-<label>Subject team<input id="pteam"></label>
-<label>Season<input id="pseason" type="number" value="2026"></label>
-<label>Project type<select id="ptype"><option value="opponent">Opponent</option><option value="league">League Database</option><option value="self_scout">ULM Self Scout</option></select></label>
-<label>CSV<input id="pcsv" type="file" accept=".csv"></label>
-</div>
-<button id="createProject">Create and Import</button>
-<div id="projectMsg" class="note"></div>
-</div>
-<h2>Projects</h2>
-<div id="projects" class="projects"></div>
-</section>
+
+
 
 <section id="dashboard" class="hide"></section>
 </main>
@@ -125,7 +116,7 @@ const SUPABASE_KEY="sb_publishable_FtmUeN1QkLlkRIqCIdQ5gw_KDbEFy1H";
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const TEAM={ALBI:"UAB",CTUN:"Connecticut",FLAT:"Florida Atlantic",FLIN:"Florida International",FLSO:"South Florida",LATU:"Tulane",MDNA:"Navy",MDUN:"Maryland",NCEA:"East Carolina",OKTU:"Tulsa",TNMS:"Memphis",TXRI:"Rice"};
 
-let session=null,currentProject=null,plays=[],filtered=[],tab="Dashboard",readOnly=false,projectionRate=70;
+let session={public:true},currentProject=null,plays=[],filtered=[],tab="Dashboard",readOnly=true,projectionRate=70;
 let filters={offense:"All",defense:"All",formation:"All",personnel:"All",advantage:"All",fzGiven:"All",fzAttacked:"All",downDistance:"All",runPass:"All",route:"All",rushers:"All"};
 let fdFilters={downDistance:"All",advantage:"All",runPass:"All",formation:"All",offense:"All",defense:"All"};
 
@@ -169,56 +160,75 @@ function attachSelectHandlers(){
  });
 }
 
+const DEFAULT_PUBLIC_SHARE_TOKEN="5f748e94-9681-4f12-8bab-75f5ca5ada6b";
+
 async function init(){
- const share=new URLSearchParams(location.search).get("share");
- if(share){await loadShared(share);return}
- const {data}=await sb.auth.getSession();session=data.session;
- sb.auth.onAuthStateChange((_e,s)=>{session=s;renderRoot()});
- renderRoot();
+ $("status").innerHTML="<span>Loading Florida Atlantic analytics...</span>";
+
+ // Primary public loader: use the existing published share RPC internally.
+ // Coaches do not need a token in the URL.
+ try{
+  const {data:p,error:e1}=await sb.rpc("get_shared_project",{token:DEFAULT_PUBLIC_SHARE_TOKEN});
+  const {data:pl,error:e2}=await sb.rpc("get_shared_plays",{token:DEFAULT_PUBLIC_SHARE_TOKEN});
+
+  if(!e1&&!e2&&p?.length){
+   currentProject=p[0];
+   plays=pl||[];
+   filtered=[...plays];
+   readOnly=true;
+   resetFilters();
+   renderDashboard();
+   renderRoot();
+   return;
+  }
+ }catch(err){
+  console.warn("Internal share loader failed:",err);
+ }
+
+ // Secondary fallback: newest published project, when anon RLS allows it.
+ const {data:projects,error:projectError}=await sb
+  .from("projects")
+  .select("*")
+  .eq("published",true)
+  .order("created_at",{ascending:false})
+  .limit(1);
+
+ if(!projectError&&projects?.length){
+  currentProject=projects[0];
+  const {data:pl,error:playsError}=await sb
+   .from("plays")
+   .select("*")
+   .eq("project_id",currentProject.id);
+
+  if(!playsError){
+   plays=pl||[];
+   filtered=[...plays];
+   readOnly=true;
+   resetFilters();
+   renderDashboard();
+   renderRoot();
+   return;
+  }
+ }
+
+ $("dashboard").classList.remove("hide");
+ $("dashboard").innerHTML=`<div class="public-error">
+  <h2>Florida Atlantic analytics could not be loaded</h2>
+  <p>The public share RPC and published-project fallback were both unavailable.</p>
+  <p class="note">The app no longer requires a login or URL token. Confirm that the original Florida Atlantic project remains published and that the existing get_shared_project/get_shared_plays RPC functions are still active in Supabase.</p>
+ </div>`;
+ $("status").innerHTML="<span>Analytics unavailable</span>";
 }
+
 function renderRoot(){
- $("status").innerHTML=session?`<span>Signed in</span>`:`<span>Not signed in</span>`;
- show("auth",!session&&!readOnly);show("projectsView",!!session&&!currentProject&&!readOnly);show("dashboard",!!currentProject);show("signOut",!!session&&!readOnly);
- if(session&&!currentProject&&!readOnly)loadProjects();
-}
-$("sendLink").onclick=async()=>{
- $("authMsg").textContent="Sending...";
- const {error}=await sb.auth.signInWithOtp({email:$("email").value,options:{emailRedirectTo:location.origin}});
- $("authMsg").textContent=error?error.message:"Check your email for the sign-in link.";
-};
-$("signOut").onclick=()=>sb.auth.signOut();
-
-async function loadProjects(){
- const {data,error}=await sb.from("projects").select("*").order("created_at",{ascending:false});
- if(error){$("projectMsg").textContent=error.message;return}
- $("projects").innerHTML=(data||[]).map(p=>`<div class=project><b>${p.name}</b><div class=note>${p.subject_team||"-"} · ${p.season||"-"} · ${p.project_type}</div><div class=actions><button onclick='openProject("${p.id}")'>Open</button><button onclick='togglePublish("${p.id}",${!p.published})'>${p.published?"Unpublish":"Publish"}</button>${p.published?`<button onclick='copyShare("${p.share_token}")'>Copy Coach Link</button>`:""}</div></div>`).join("");
-}
-window.togglePublish=async(id,published)=>{await sb.from("projects").update({published}).eq("id",id);loadProjects()}
-window.copyShare=async token=>{await navigator.clipboard.writeText(location.origin+"/?share="+token);$("projectMsg").textContent="Coach link copied."}
-window.openProject=async id=>{
- const {data:p}=await sb.from("projects").select("*").eq("id",id).single();
- const {data:pl,error}=await sb.from("plays").select("*").eq("project_id",id);
- if(error){alert(error.message);return}
- currentProject=p;plays=pl||[];filtered=[...plays];readOnly=false;resetFilters();renderDashboard();renderRoot();
+ $("status").innerHTML=currentProject
+  ?`<span>${plays.length} plays loaded</span><span>Public access</span>`
+  :`<span>Loading published project...</span>`;
+ show("dashboard",!!currentProject);
 }
 
-$("createProject").onclick=async()=>{
- const file=$("pcsv").files[0];if(!$("pname").value||!file){$("projectMsg").textContent="Enter a project name and choose a CSV.";return}
- $("projectMsg").textContent="Creating project...";
- const {data:p,error}=await sb.from("projects").insert({name:$("pname").value,subject_team:$("pteam").value||null,season:Number($("pseason").value)||null,project_type:$("ptype").value}).select().single();
- if(error){$("projectMsg").textContent=error.message;return}
- const text=await file.text();const parsed=Papa.parse(text,{header:true,skipEmptyLines:true}).data;
- const rows=parsed.map((r,i)=>{
-   const y=num(r.pff_GAINLOSSNET),d=num(r.pff_DOWN),dist=num(r.pff_DISTANCE),ytg=num(r.pff_YARDS_TO_GOAL_LINE),rp=String(r.pff_RUNPASS||"").toUpperCase(),pr=String(r.pff_PASSRESULT||"").toUpperCase();
-   const comp=pr==="COMPLETE",sack=present(r.pff_SACK)||pr==="SACK",intr=present(r.pff_INTERCEPTION)||pr==="INTERCEPTION",fumble=present(r.pff_FUMBLE),inc=rp==="P"&&!comp&&!sack&&!intr;
-   const fzg=String(r["FZ Advantage"]||"").toUpperCase(),fza=String(r["FZ Attacked"]||"").toUpperCase(),na=String(r["Num Ad"]||"").toUpperCase();
-   return{skip:String(r.pff_NOPLAY||"0")==="1"||y===null||!["R","P"].includes(rp)||!String(r["Chart Formation"]||"").trim()||!["FIELD","BOUNDARY","BOX","MOF"].includes(fzg),
-   project_id:p.id,source_play_id:String(r.pff_GAMEID||"")+"-"+String(r.pff_DRIVE||"")+"-"+String(r.pff_PLAYNUMBER||i+1),game_id:String(r.pff_GAMEID||"")||null,offense:school(r.pff_OFFTEAM),defense:school(r.pff_DEFTEAM),down:d,distance:dist,yards_to_goal:ytg,run_pass:rp,formation:String(r["Chart Formation"]||"").trim().toUpperCase(),personnel:String(r.pff_OFF_PERSONNEL_GROUP||"").replace(/\.0$/,"")||null,num_advantage:na==="YES"?true:na==="NO"?false:null,fz_advantage:fzg||null,fz_attacked:fza||null,same_zone:fzg!==""&&fzg===fza,yards:y,epa:num(r.pff_EXPECTED_POINTS_ADDED),first_down:Number(r.pff_FIRST_DOWN_GAINED||0)===1,touchdown:present(r.pff_TOUCHDOWN),explosive:y>=15,negative:(y<=0)||inc||sack||intr||fumble,completion:comp,sack,interception:intr,scramble:present(r.pff_QBSCRAMBLE),fumble,route:r.pff_ROUTE_THROWN||null,target_position:r.pff_PASSRECEIVERPOSITIONTARGET||null,pass_rushers:parseRushers(r.pff_PASSRUSHPLAYERS),down_distance_bucket:ddBucket(d,dist,ytg),distance_bucket:dist==null?"Unknown":dist<=3?"1-3":dist<=6?"4-6":dist<=9?"7-9":dist<=12?"10-12":"13+",raw_data:r}
- }).filter(x=>!x.skip).map(({skip,...x})=>x);
- $("projectMsg").textContent=`Uploading ${rows.length} plays...`;
- for(let i=0;i<rows.length;i+=500){const {error:e}=await sb.from("plays").insert(rows.slice(i,i+500));if(e){$("projectMsg").textContent=e.message;return}}
- $("projectMsg").textContent="Project saved.";loadProjects();
-}
+
+
 
 async function loadShared(token){
  $("status").innerHTML="<span>Loading shared project...</span>";
@@ -236,12 +246,12 @@ function renderDashboard(){
  $("dashboard").innerHTML=`
  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
    <div><h2 style="margin-bottom:3px">${currentProject.name}</h2><div class=note>${currentProject.subject_team||"-"} · ${currentProject.season||"-"}</div></div>
-   ${readOnly?"":"<button id='backBtn'>Back to Projects</button>"}
+   
  </div>
  <div id="globalFilters" class="filters"></div>
  <div id="tabs" class="tabs"></div>
  <div id="content"></div>`;
- if(!readOnly)$("backBtn").onclick=()=>{currentProject=null;plays=[];filtered=[];renderRoot()}
+
  buildGlobalFilters();buildTabs();applyFilters();
 }
 function buildGlobalFilters(){

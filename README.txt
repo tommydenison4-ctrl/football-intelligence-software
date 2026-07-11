@@ -1,18 +1,18 @@
-ULM Unified Football Analytics Platform V1.3 Landing
+ULM Football Intelligence Platform V1.5
 
-STRUCTURE
-- index.html          ULM-branded landing page
-- offense.html        Existing Supabase offense/advantage analytics engine
-- defense.html        Defensive analytics workspace
-- personnel.html      Florida Atlantic player portal
-- depth-chart.html    Weekly depth chart workspace
+FIXED
+- Offensive Analytics no longer depends on a token in the URL.
+- The existing Florida Atlantic share token is stored internally.
+- The app first loads through get_shared_project/get_shared_plays.
+- A newest-published-project query remains as a fallback.
+- No login is required.
 
-NAVIGATION
-Navigation appears only in the top bar on each page.
-The Player Portal and Defensive Analytics links were removed from the offense dashboard tabs.
-The repeated connected-workspace callout was removed.
+DEPTH CHART
+- Replaced the placeholder with a projected Florida Atlantic 2026 chart.
+- Includes offense, defense, special teams and top incoming players.
+- Third-party grades are intentionally excluded.
+- Incoming-player priority is based on projected role, not grade.
+- Update the chart when FAU publishes its official weekly depth chart.
 
 DEPLOYMENT
-Upload every file in this package directly into the repository root.
-The app will open to the new landing page.
-Existing Supabase logic remains in offense.html.
+Upload every file in this ZIP directly into the GitHub repository root.

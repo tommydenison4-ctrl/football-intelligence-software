@@ -3,30 +3,72 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ULM Weekly Depth Chart</title>
+<title>ULM | Florida Atlantic Depth Chart</title>
 <style>
-:root{--m:#6b0016;--n:#0b1f3a;--g:#b9975b;--bg:#f4f6f9;--p:#fff;--l:#d9dee7;--t:#172033;--u:#687287}
-*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}
-header{background:linear-gradient(135deg,var(--m),#2c0008);color:#fff;border-bottom:5px solid var(--g);padding:20px 26px}
+:root{
+ --m:#6b0016;--m2:#2c0008;--n:#0b1f3a;--blue:#073b68;--g:#b9975b;
+ --bg:#f4f6f9;--p:#fff;--l:#d9dee7;--t:#172033;--u:#687287;
+ --transfer:#f7edd8;--freshman:#eee8f8;--green:#1d9b57
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}
+header{background:linear-gradient(135deg,var(--m),var(--m2));color:#fff;border-bottom:5px solid var(--g);padding:20px 26px}
 .brand{display:flex;gap:14px;align-items:center;max-width:1500px;margin:auto}.logo{width:62px;height:62px;object-fit:contain}
 .ey{color:var(--g);font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
 h1{margin:3px 0}.sub{font-size:13px;color:#efdfe3}
-nav{background:#fff;border-bottom:1px solid var(--l);padding:10px 26px;display:flex;gap:8px;overflow-x:auto}
+nav{background:#fff;border-bottom:1px solid var(--l);padding:10px 26px;display:flex;gap:8px;overflow-x:auto;position:sticky;top:0;z-index:20}
 nav a{display:inline-flex;align-items:center;min-height:42px;padding:9px 12px;border:1px solid var(--l);border-radius:9px;text-decoration:none;color:var(--n);font-size:13px;font-weight:900;white-space:nowrap}
 nav a.active{background:#765b2d;border-color:#765b2d;color:#fff}
-main{max-width:1400px;margin:auto;padding:24px 26px}
-.hero,.panel{background:#fff;border:1px solid var(--l);border-radius:14px;padding:20px}
-.hero{border-left:6px solid var(--g)}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
-.row{display:grid;grid-template-columns:95px 1fr 1fr;gap:8px;padding:10px 0;border-bottom:1px solid #edf0f3}
-.row:last-child{border-bottom:0}.pos{font-weight:900;color:var(--m)}.slot{background:#f8fafc;border:1px solid var(--l);border-radius:8px;padding:9px;color:var(--u);font-size:12px}
-.note{color:var(--u);font-size:13px;line-height:1.5}
-.badge{display:inline-block;margin-top:10px;background:#f0e8da;color:#765b2d;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:900}
-@media(max-width:800px){header,nav,main{padding-left:14px;padding-right:14px}.grid{grid-template-columns:1fr}.logo{width:48px;height:48px}.row{grid-template-columns:70px 1fr 1fr}}
+main{max-width:1500px;margin:auto;padding:24px 26px}
+.hero{background:#fff;border:1px solid var(--l);border-left:6px solid var(--g);border-radius:14px;padding:20px}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.hero h2{margin:0 0 6px}.note{color:var(--u);font-size:13px;line-height:1.5}
+.updated{background:#f0e8da;color:#765b2d;border-radius:999px;padding:7px 10px;font-size:10px;font-weight:900;white-space:nowrap}
+.depth-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 12px}
+.depth-tabs button{border:1px solid var(--l);background:#fff;color:var(--n);border-radius:9px;padding:10px 13px;font-weight:900;cursor:pointer}
+.depth-tabs button.active{background:var(--n);border-color:var(--n);color:#fff}
+.section{display:none}.section.active{display:block}
+.group{background:#fff;border:1px solid var(--l);border-radius:14px;margin-bottom:14px;overflow:hidden}
+.group-head{background:var(--n);color:#fff;padding:11px 14px;font-weight:900;display:flex;justify-content:space-between;gap:12px}
+.group-head span{font-size:10px;color:#cbd6e5;font-weight:600}
+.depth-row{display:grid;grid-template-columns:110px repeat(4,minmax(180px,1fr));gap:0;border-top:1px solid #edf0f3;align-items:stretch}
+.depth-row:first-of-type{border-top:0}
+.pos{padding:14px;font-weight:900;color:var(--m);background:#fafbfe;display:flex;align-items:center}
+.player{padding:12px;border-left:1px solid #edf0f3;min-height:78px}
+.player.empty{color:#a2aab8;background:#fafbfc}
+.rank{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--u);font-weight:900}
+.pname{font-size:15px;font-weight:900;margin-top:3px}
+.meta{font-size:10px;color:var(--u);margin-top:4px;line-height:1.35}
+.badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.badge{font-size:8px;font-weight:900;text-transform:uppercase;border-radius:999px;padding:4px 6px;background:#edf1f6;color:#41506a}
+.badge.transfer{background:var(--transfer);color:#7a5b28}
+.badge.freshman{background:var(--freshman);color:#62468a}
+.badge.returner{background:#e7f4ec;color:#1a7547}
+.incoming-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.incoming{background:#fff;border:1px solid var(--l);border-top:4px solid var(--g);border-radius:13px;padding:15px}
+.incoming h3{margin:4px 0;font-size:18px}.role{color:var(--m);font-size:11px;font-weight:900;margin-top:7px}
+.source-note{font-size:10px;color:var(--u);margin-top:18px;line-height:1.5}
+@media(max-width:1050px){
+ .depth-row{grid-template-columns:95px repeat(2,minmax(210px,1fr))}
+ .depth-row .player:nth-child(n+4){display:none}
+ .incoming-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:700px){
+ header,nav,main{padding-left:14px;padding-right:14px}.logo{width:48px;height:48px}
+ h1{font-size:23px}.hero-top{flex-direction:column}.depth-tabs{overflow-x:auto;flex-wrap:nowrap}
+ .depth-row{grid-template-columns:74px 1fr}.depth-row .player:nth-child(n+3){display:none}
+ .pos{padding:10px}.player{padding:10px}.incoming-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
-<header><div class="brand"><img class="logo" src="ulm_logo_official.png" alt="ULM logo"><div><div class="ey">ULM Warhawks Football</div><h1>Weekly Depth Chart</h1><div class="sub">Opponent personnel · starters · backups · packages</div></div></div></header>
+<header>
+ <div class="brand">
+  <img class="logo" src="ulm_logo_official.png" alt="ULM logo">
+  <div><div class="ey">ULM Warhawks Football</div><h1>Florida Atlantic Depth Chart</h1><div class="sub">Projected two-deep · summer 2026 roster · incoming personnel</div></div>
+ </div>
+</header>
 <nav>
 <a href="index.html">Home</a>
 <a href="offense.html">Offensive Analytics</a>
@@ -36,30 +78,208 @@ main{max-width:1400px;margin:auto;padding:24px 26px}
 </nav>
 <main>
 <section class="hero">
-<h2>Florida Atlantic Depth Chart</h2>
-<div class="note">This workspace is ready for the weekly depth chart once the official opponent release is available. Entries will likely be added manually at first, then connected to the player portal.</div>
-<span class="badge">Manual Weekly Entry</span>
+ <div class="hero-top">
+  <div><h2>Projected 2026 Two-Deep</h2>
+  <div class="note">Depth order is a scouting projection based on the current public summer chart and roster. CFBDepth grades were intentionally excluded. The chart should be updated when FAU releases its official weekly depth chart.</div></div>
+  <div class="updated">Updated July 2026</div>
+ </div>
 </section>
-<section class="grid">
-<div class="panel"><h2>Offense</h2>
-<div class="row"><div class="pos">QB</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
-<div class="row"><div class="pos">RB</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
-<div class="row"><div class="pos">WR-X</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
-<div class="row"><div class="pos">WR-Z</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
-<div class="row"><div class="pos">Slot</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
-<div class="row"><div class="pos">TE</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
-<div class="row"><div class="pos">OL</div><div class="slot">Starting Five</div><div class="slot">Top Reserves</div></div>
+
+<div class="depth-tabs">
+ <button class="active" data-tab="offense">Offense</button>
+ <button data-tab="defense">Defense</button>
+ <button data-tab="special">Special Teams</button>
+ <button data-tab="incoming">Top Incoming Players</button>
 </div>
-<div class="panel"><h2>Defense</h2>
-<div class="row"><div class="pos">EDGE</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
-<div class="row"><div class="pos">DT</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
-<div class="row"><div class="pos">LB</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
-<div class="row"><div class="pos">CB</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
-<div class="row"><div class="pos">Nickel</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
-<div class="row"><div class="pos">Safety</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
-<div class="row"><div class="pos">Package</div><div class="slot">Sub Package</div><div class="slot">Personnel Alert</div></div>
-</div>
+
+<section id="offense" class="section active">
+ <div class="group">
+  <div class="group-head">Skill Positions <span>Air Raid structure</span></div>
+  <div class="depth-row"><div class="pos">QB</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#10 Caden Veltkamp</div><div class="meta">6'5" · 236 · R-Sr. · WKU</div><div class="badges"><span class="badge returner">Returning starter</span></div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#7 Jordan Magwood</div><div class="meta">6'0" · 205 · So.</div></div>
+   <div class="player"><div class="rank">Third</div><div class="pname">#18 Drew Devillier</div><div class="meta">6'5" · 230 · So. · Rice</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Development</div><div class="pname">#12 Jeremiah Daoud</div><div class="meta">6'3" · 210 · Fr.</div><div class="badges"><span class="badge freshman">Freshman</span></div></div>
+  </div>
+  <div class="depth-row"><div class="pos">RB</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#28 Kaden Shields-Dutton</div><div class="meta">5'11" · 215 · Jr.</div><div class="badges"><span class="badge returner">Returning</span></div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#5 Leonard Farrow</div><div class="meta">R-Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Rotation</div><div class="pname">#21 Ethan Ervin</div><div class="meta">R-Fr.</div></div>
+   <div class="player"><div class="rank">Rotation</div><div class="pname">#20 Joshua Harriott</div><div class="meta">R-Jr.</div></div>
+  </div>
+  <div class="depth-row"><div class="pos">WR-X</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#9 Dominique Henry</div><div class="meta">5'11" · 190 · R-Sr. · BYU</div><div class="badges"><span class="badge returner">Returning starter</span></div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#6 RJ Garcia II</div><div class="meta">Gr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player empty">—</div><div class="player empty">—</div>
+  </div>
+  <div class="depth-row"><div class="pos">WR-Z</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#0 Branden Hoch</div><div class="meta">6'3" · 200 · So.</div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#3 Tucker Holloway</div><div class="meta">R-Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player empty">—</div><div class="player empty">—</div>
+  </div>
+  <div class="depth-row"><div class="pos">WR-Y</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#8 Easton Messer</div><div class="meta">5'9" · 190 · R-Sr. · WKU</div><div class="badges"><span class="badge returner">Returning starter</span></div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#4 Antojuan Woody</div><div class="meta">Jr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player empty">—</div><div class="player empty">—</div>
+  </div>
+  <div class="depth-row"><div class="pos">WR-H</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#2 Kelby Valsin</div><div class="meta">6'2" · 195 · R-Jr. · Texas Tech</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#13 Jahmari Powell-Wonson</div><div class="meta">R-So. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player empty">—</div><div class="player empty">—</div>
+  </div>
+  <div class="depth-row"><div class="pos">TE</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#11 Brooks Johnson</div><div class="meta">6'5" · R-Sr. · Coastal Carolina</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Co-starter</div><div class="pname">#1 AJ Johnson</div><div class="meta">6'4" · 255 · R-Sr. · Villanova</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Rotation</div><div class="pname">#88 Marcus Vinson</div><div class="meta">6'4" · 250 · Sr. · UTEP/New Mexico</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player empty">—</div>
+  </div>
+ </div>
+
+ <div class="group">
+  <div class="group-head">Offensive Line <span>Projected summer order</span></div>
+  <div class="depth-row"><div class="pos">LT</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#57 Ja'Kavion Nonar</div><div class="meta">6'8" · 315 · R-Sr. · Maryland</div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#73 Kortez Winslow</div><div class="meta">6'5" · 315 · R-Jr. · Lamar</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Depth</div><div class="pname">#77 Keon Rohé</div><div class="meta">R-So.</div></div><div class="player empty">—</div>
+  </div>
+  <div class="depth-row"><div class="pos">LG</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#78 Carson Osmus</div><div class="meta">R-So. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#67 Alejandro Schmitt</div><div class="meta">Fr.</div><div class="badges"><span class="badge freshman">Freshman</span></div></div>
+   <div class="player empty">—</div><div class="player empty">—</div>
+  </div>
+  <div class="depth-row"><div class="pos">C</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#65 Braden Cunningham</div><div class="meta">R-So.</div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#60 Aqil Meredith-Smith</div><div class="meta">So. · LIU</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player empty">—</div><div class="player empty">—</div>
+  </div>
+  <div class="depth-row"><div class="pos">RG</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#62 Vincent Fiacable</div><div class="meta">6'4" · 320 · R-Sr. · Indiana</div><div class="badges"><span class="badge returner">Returning starter</span></div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#72 Ovie Dubre</div><div class="meta">R-Jr.</div></div>
+   <div class="player empty">—</div><div class="player empty">—</div>
+  </div>
+  <div class="depth-row"><div class="pos">RT</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#74 Ben Galloway</div><div class="meta">6'4" · 310 · R-Jr. · Georgia Tech</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#75 Mauricio Hinds</div><div class="meta">R-So.</div></div>
+   <div class="player"><div class="rank">Depth</div><div class="pname">#64 Vincent Forney</div><div class="meta">R-So. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div><div class="player empty">—</div>
+  </div>
+ </div>
+</section>
+
+<section id="defense" class="section">
+ <div class="group">
+  <div class="group-head">Defensive Front <span>Multiple 4-2-5</span></div>
+  <div class="depth-row"><div class="pos">DE</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#5 Deshaun Batiste</div><div class="meta">6'3" · 258 · R-Sr. · Troy/Tulane</div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#11 Gavench Marcelin</div><div class="meta">Jr.</div></div>
+   <div class="player"><div class="rank">Depth</div><div class="pname">#15 Tyclean Luman</div><div class="meta">R-So. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div><div class="player empty">—</div>
+  </div>
+  <div class="depth-row"><div class="pos">NT</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#1 CJ Doggette Jr.</div><div class="meta">6'2" · 277 · R-Sr. · Cincinnati/Ohio</div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#62 Enyce Sledge</div><div class="meta">R-Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Rotation</div><div class="pname">#94 Corey Clark</div><div class="meta">Sr. · Mississippi State</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Rotation</div><div class="pname">#13 Earl Miller Jr.</div><div class="meta">Gr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+  </div>
+  <div class="depth-row"><div class="pos">DT</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#98 Blake Burris</div><div class="meta">Gr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#2 Wilky Denaud</div><div class="meta">6'3" · 285 · R-Jr. · Mississippi State</div></div>
+   <div class="player"><div class="rank">Rotation</div><div class="pname">#14 Tycoolhill Luman</div><div class="meta">R-So. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div><div class="player empty">—</div>
+  </div>
+  <div class="depth-row"><div class="pos">RUSH</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#10 Josh Roberts</div><div class="meta">6'4" · 220 · So.</div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#12 Jay Crable</div><div class="meta">R-Jr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Rotation</div><div class="pname">#9 Jonathan Bax</div><div class="meta">Sr. · TCU</div><div class="badges"><span class="badge transfer">Transfer</span></div></div><div class="player empty">—</div>
+  </div>
+ </div>
+
+ <div class="group">
+  <div class="group-head">Linebackers & Secondary <span>Projected summer order</span></div>
+  <div class="depth-row"><div class="pos">WLB</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#6 Leon Hart Jr.</div><div class="meta">R-Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#7 Khmari Johnson</div><div class="meta">Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Depth</div><div class="pname">#17 Char'Quez Lee</div><div class="meta">R-So.</div></div><div class="player empty">—</div>
+  </div>
+  <div class="depth-row"><div class="pos">MLB</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#18 Joseph Sipp Jr.</div><div class="meta">6'0" · 210 · R-Sr. · Bowling Green/Kansas</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#28 Zyere Horton</div><div class="meta">R-Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Depth</div><div class="pname">#21 Nate Fischer</div><div class="meta">Jr. · San Diego</div><div class="badges"><span class="badge transfer">Transfer</span></div></div><div class="player empty">—</div>
+  </div>
+  <div class="depth-row"><div class="pos">LCB</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#4 Damarius McGhee</div><div class="meta">6'0" · 183 · Gr. · LSU/Kansas</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#3 Derrick Rogers</div><div class="meta">R-Jr. · Purdue</div></div>
+   <div class="player"><div class="rank">Depth</div><div class="pname">#26 Amar Reynolds</div><div class="meta">So. · Illinois</div><div class="badges"><span class="badge transfer">Transfer</span></div></div><div class="player empty">—</div>
+  </div>
+  <div class="depth-row"><div class="pos">RCB</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#23 JK Johnson</div><div class="meta">R-Sr. · Ohio State/LSU/Oklahoma State</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#16 Wallace Foster IV</div><div class="meta">R-So. · LSU</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player empty">—</div><div class="player empty">—</div>
+  </div>
+  <div class="depth-row"><div class="pos">NB</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#0 Damon Allen</div><div class="meta">6'1" · 200 · So.</div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#8 Chris Tooley III</div><div class="meta">6'0" · 180 · R-Jr.</div></div>
+   <div class="player empty">—</div><div class="player empty">—</div>
+  </div>
+  <div class="depth-row"><div class="pos">SS</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#22 Jayden Sweeney</div><div class="meta">R-Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#20 Bo Simpson-Nealy</div><div class="meta">R-Jr. · Western Carolina</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player empty">—</div><div class="player empty">—</div>
+  </div>
+  <div class="depth-row"><div class="pos">FS</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#19 Tyson Rooks</div><div class="meta">6'5" · 180 · R-Sr. · Illinois</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player empty">No established second listed</div><div class="player empty">—</div><div class="player empty">—</div>
+  </div>
+ </div>
+</section>
+
+<section id="special" class="section">
+ <div class="group">
+  <div class="group-head">Special Teams <span>Projected summer order</span></div>
+  <div class="depth-row"><div class="pos">P</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#91 Reed Chandley</div><div class="meta">Jr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#49 Alex Grace</div><div class="meta">R-So. · Transfer</div></div><div class="player empty">—</div><div class="player empty">—</div>
+  </div>
+  <div class="depth-row"><div class="pos">K / KO</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#41 Collin Rogers</div><div class="meta">6'4" · 185 · R-Sr. · SMU</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#96 Lliam Peterson</div><div class="meta">Fr.</div><div class="badges"><span class="badge freshman">Freshman</span></div></div><div class="player empty">—</div><div class="player empty">—</div>
+  </div>
+  <div class="depth-row"><div class="pos">LS</div>
+   <div class="player"><div class="rank">Starter</div><div class="pname">#45 Walker Adkinson</div><div class="meta">Gr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+   <div class="player"><div class="rank">Backup</div><div class="pname">#46 Blake Thomas</div><div class="meta">Fr.</div><div class="badges"><span class="badge freshman">Freshman</span></div></div><div class="player empty">—</div><div class="player empty">—</div>
+  </div>
+  <div class="depth-row"><div class="pos">PR</div>
+   <div class="player"><div class="rank">Primary</div><div class="pname">#8 Easton Messer</div><div class="meta">WR · Returning starter</div></div>
+   <div class="player empty">—</div><div class="player empty">—</div><div class="player empty">—</div>
+  </div>
+  <div class="depth-row"><div class="pos">KR</div>
+   <div class="player"><div class="rank">Primary</div><div class="pname">#4 Antojuan Woody</div><div class="meta">WR · Transfer</div></div>
+   <div class="player empty">—</div><div class="player empty">—</div><div class="player empty">—</div>
+  </div>
+ </div>
+</section>
+
+<section id="incoming" class="section">
+ <div class="incoming-grid">
+  <div class="incoming"><div class="ey">Projected Starter</div><h3>Joseph Sipp Jr. · LB</h3><div class="meta">Bowling Green / Kansas · R-Sr.</div><div class="role">Projected starting middle linebacker</div></div>
+  <div class="incoming"><div class="ey">Projected Starter</div><h3>JK Johnson · CB</h3><div class="meta">Ohio State / LSU / Oklahoma State · R-Sr.</div><div class="role">Projected starting outside corner</div></div>
+  <div class="incoming"><div class="ey">Projected Starter</div><h3>Damarius McGhee · CB</h3><div class="meta">LSU / Kansas · Gr.</div><div class="role">Projected starting outside corner</div></div>
+  <div class="incoming"><div class="ey">Projected Starter</div><h3>Tyson Rooks · S</h3><div class="meta">Illinois · R-Sr.</div><div class="role">Projected starting free safety</div></div>
+  <div class="incoming"><div class="ey">Projected Starter</div><h3>Ben Galloway · OL</h3><div class="meta">Georgia Tech · R-Jr.</div><div class="role">Projected starting right tackle</div></div>
+  <div class="incoming"><div class="ey">Projected Starter</div><h3>Brooks Johnson · TE</h3><div class="meta">Coastal Carolina · R-Sr.</div><div class="role">Projected lead tight end</div></div>
+  <div class="incoming"><div class="ey">Key Rotation</div><h3>Wallace Foster IV · CB</h3><div class="meta">LSU · R-So.</div><div class="role">Projected two-deep boundary corner</div></div>
+  <div class="incoming"><div class="ey">Key Rotation</div><h3>Jonathan Bax · EDGE/LB</h3><div class="meta">TCU · Jr.</div><div class="role">Projected rush rotation</div></div>
+  <div class="incoming"><div class="ey">Quarterback Depth</div><h3>Drew Devillier · QB</h3><div class="meta">Rice · So.</div><div class="role">Experienced transfer competing in the backup room</div></div>
+ </div>
+ <div class="source-note">Incoming-player priority is based on projected depth-chart role and expected opportunity, not third-party grades. This is a summer scouting projection and should be updated when FAU releases its official weekly chart.</div>
 </section>
 </main>
+<script>
+document.querySelectorAll(".depth-tabs button").forEach(btn=>{
+ btn.addEventListener("click",()=>{
+  document.querySelectorAll(".depth-tabs button").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById(btn.dataset.tab).classList.add("active");
+ });
+});
+</script>
 </body>
 </html>
