@@ -1,23 +1,12 @@
-ULM Football Intelligence Platform V1.7
+ULM Football Intelligence Platform V1.11
 
-P & 10 FIX
-The previous build required an explicit possession or drive marker. The current
-Supabase play rows did not provide one, so P & 10 never appeared.
+DEFENSIVE REPORT PRESENTATION FIXES
+- Written PFF route names now take priority over numbered route-family codes.
+- Examples include Go, Hitch, Out, Slant, Post, Seam and WR Screen.
+- Rush-count chart labels now include sample size:
+  3 rush (snaps), 4 rush (snaps), etc.
+- Rush-count tables clarify that Plays represents pass snaps.
+- Chart x-axis labels now sit below a separate baseline and no longer run through it.
+- Bar values have a white background so the numbers remain legible against chart elements.
 
-This build now identifies the first play of a possession using:
-- Explicit possession/drive IDs or start flags
-- First offensive play of each game
-- A change in the offense from the previous play
-- The play following a punt, turnover, touchdown, safety or end-of-possession event
-- Sequence resets when available
-
-P & 10 is assigned only when that inferred possession-opening play is exactly
-1st down and 10 yards to go.
-
-1st & 10 remains a separate exact bucket for all other first-and-10 plays.
-
-The new bucket is used by:
-- Global down-distance filters
-- First Down Explorer
-- Situations reports
-- Every formation and team table grouped by down-distance
+All V1.10 observations, opponent filters and exact down-distance logic remain intact.
