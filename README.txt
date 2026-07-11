@@ -1,20 +1,29 @@
-ULM Unified Football Analytics Platform V1
+ULM Unified Football Analytics Platform V1.2 Flat
 
-DEPLOYMENT
-1. Upload this entire folder to the GitHub repository connected to Vercel,
-   or upload the ZIP to a new Vercel static project.
-2. The root index.html remains the existing Supabase-connected advantage engine.
-3. Existing root coach links remain in the form:
-   https://YOUR-DOMAIN.vercel.app/?share=TOKEN
+WHY THIS VERSION
+The prior folder-based upload allowed the Player Portal index.html to replace the
+root analytics index.html during deployment.
 
-MODULES
-- /                Offense advantage analytics and current team comparison tools
-- /personnel/      Florida Atlantic player portal (offense and defense personnel)
-- /defense/        Defense scheme analytics workspace shell
+THIS PACKAGE IS FLAT:
+- index.html             Original Supabase offense/advantage analytics engine
+- personnel.html         Florida Atlantic Player Portal
+- defense.html           Defense Scheme workspace
+- personnel-app.js       Player Portal JavaScript
+- personnel-data.js      Player Portal embedded FAU data
+- personnel-styles.css   Player Portal styling
+- ulm_logo_official.png  Shared logo
 
-IMPORTANT
-- Supabase URL and publishable key were preserved exactly from the supplied app.
-- No environment variables are required for the current static build.
-- No defensive scheme data was invented.
-- Player data remains embedded in the current personnel portal for Florida Atlantic.
-- Future work should move personnel records into Supabase tables for multi-team scaling.
+UPLOAD INSTRUCTIONS
+1. Remove the currently uploaded merged files from the repository root, or replace them.
+2. Upload ALL files from this ZIP directly into the repository root.
+3. Confirm that index.html is the offense advantage analytics code before committing.
+4. Vercel will deploy:
+   /index.html
+   /personnel.html
+   /defense.html
+
+EXISTING FUNCTIONALITY
+- Supabase project login/import/share logic is preserved in index.html.
+- Existing coach links remain rooted at:
+  https://YOUR-DOMAIN/?share=TOKEN
+- Player Portal remains static and uses the embedded Florida Atlantic dataset.
