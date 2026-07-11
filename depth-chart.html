@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ULM Weekly Depth Chart</title>
+<style>
+:root{--m:#6b0016;--n:#0b1f3a;--g:#b9975b;--bg:#f4f6f9;--p:#fff;--l:#d9dee7;--t:#172033;--u:#687287}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}
+header{background:linear-gradient(135deg,var(--m),#2c0008);color:#fff;border-bottom:5px solid var(--g);padding:20px 26px}
+.brand{display:flex;gap:14px;align-items:center;max-width:1500px;margin:auto}.logo{width:62px;height:62px;object-fit:contain}
+.ey{color:var(--g);font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+h1{margin:3px 0}.sub{font-size:13px;color:#efdfe3}
+nav{background:#fff;border-bottom:1px solid var(--l);padding:10px 26px;display:flex;gap:8px;overflow-x:auto}
+nav a{display:inline-flex;align-items:center;min-height:42px;padding:9px 12px;border:1px solid var(--l);border-radius:9px;text-decoration:none;color:var(--n);font-size:13px;font-weight:900;white-space:nowrap}
+nav a.active{background:#765b2d;border-color:#765b2d;color:#fff}
+main{max-width:1400px;margin:auto;padding:24px 26px}
+.hero,.panel{background:#fff;border:1px solid var(--l);border-radius:14px;padding:20px}
+.hero{border-left:6px solid var(--g)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+.row{display:grid;grid-template-columns:95px 1fr 1fr;gap:8px;padding:10px 0;border-bottom:1px solid #edf0f3}
+.row:last-child{border-bottom:0}.pos{font-weight:900;color:var(--m)}.slot{background:#f8fafc;border:1px solid var(--l);border-radius:8px;padding:9px;color:var(--u);font-size:12px}
+.note{color:var(--u);font-size:13px;line-height:1.5}
+.badge{display:inline-block;margin-top:10px;background:#f0e8da;color:#765b2d;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:900}
+@media(max-width:800px){header,nav,main{padding-left:14px;padding-right:14px}.grid{grid-template-columns:1fr}.logo{width:48px;height:48px}.row{grid-template-columns:70px 1fr 1fr}}
+</style>
+</head>
+<body>
+<header><div class="brand"><img class="logo" src="ulm_logo_official.png" alt="ULM logo"><div><div class="ey">ULM Warhawks Football</div><h1>Weekly Depth Chart</h1><div class="sub">Opponent personnel · starters · backups · packages</div></div></div></header>
+<nav>
+<a href="index.html">Home</a>
+<a href="offense.html">Offensive Analytics</a>
+<a href="defense.html">Defensive Analytics</a>
+<a href="personnel.html">Player Portal</a>
+<a class="active" href="depth-chart.html">Depth Chart</a>
+</nav>
+<main>
+<section class="hero">
+<h2>Florida Atlantic Depth Chart</h2>
+<div class="note">This workspace is ready for the weekly depth chart once the official opponent release is available. Entries will likely be added manually at first, then connected to the player portal.</div>
+<span class="badge">Manual Weekly Entry</span>
+</section>
+<section class="grid">
+<div class="panel"><h2>Offense</h2>
+<div class="row"><div class="pos">QB</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
+<div class="row"><div class="pos">RB</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
+<div class="row"><div class="pos">WR-X</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
+<div class="row"><div class="pos">WR-Z</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
+<div class="row"><div class="pos">Slot</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
+<div class="row"><div class="pos">TE</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
+<div class="row"><div class="pos">OL</div><div class="slot">Starting Five</div><div class="slot">Top Reserves</div></div>
+</div>
+<div class="panel"><h2>Defense</h2>
+<div class="row"><div class="pos">EDGE</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
+<div class="row"><div class="pos">DT</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
+<div class="row"><div class="pos">LB</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
+<div class="row"><div class="pos">CB</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
+<div class="row"><div class="pos">Nickel</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
+<div class="row"><div class="pos">Safety</div><div class="slot">Starter</div><div class="slot">Backup</div></div>
+<div class="row"><div class="pos">Package</div><div class="slot">Sub Package</div><div class="slot">Personnel Alert</div></div>
+</div>
+</section>
+</main>
+</body>
+</html>
