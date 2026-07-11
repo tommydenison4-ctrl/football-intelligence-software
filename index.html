@@ -1,0 +1,38 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ULM Player Portal | Unified Analytics Platform</title><link rel="stylesheet" href="styles.css"><style>
+.unified-nav{
+  position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid #d8e0e8;
+  display:flex;gap:8px;padding:9px 14px;overflow-x:auto;-webkit-overflow-scrolling:touch
+}
+.unified-nav a{
+  min-height:40px;display:inline-flex;align-items:center;padding:8px 11px;
+  border:1px solid #d8e0e8;border-radius:8px;color:#073b68;text-decoration:none;
+  font-size:12px;font-weight:700;white-space:nowrap;background:#fff
+}
+.unified-nav a.active{background:#073b68;color:#fff;border-color:#073b68}
+</style></head><body>
+<nav class="unified-nav" aria-label="Platform modules">
+  <a href="/">Offense Analytics</a>
+  <a class="active" href="/personnel/">Player Portal</a>
+  <a href="/defense/">Defense Scheme</a>
+</nav>
+<section class="landing" id="landing"><div class="landing-inner"><div class="landing-brand"><img class="landing-logo" src="ulm_logo_official.png"><div><div class="landing-title">ULM Personnel Intelligence Platform</div><div class="landing-sub">Football Analytics · Scouting · Personnel Intelligence</div></div></div><div class="opponent-panel"><div class="overline">2026 Opponent Database</div><div class="opponent-row"><div class="opponent-name">Florida Atlantic</div><div class="status"><span class="status-dot"></span> Published</div></div></div><div class="landing-stats">
+      <div class="landing-stat"><strong>36</strong><span>Player Profiles</span></div>
+      <div class="landing-stat"><strong>12</strong><span>Games Indexed</span></div>
+      <div class="landing-stat"><strong>4,979</strong><span>Offensive Snaps</span></div>
+      <div class="landing-stat"><strong>5,200</strong><span>Defensive Snaps</span></div>
+    </div><div class="module-grid"><button class="module offense" data-entry="offense"><span class="overline">Personnel Database</span><span class="module-title">Offense</span><span class="module-text">Quarterbacks, skill players, offensive line, production, routes, coverage splits and game logs.</span><span class="module-action">Open Offensive Intelligence →</span></button><button class="module defense" data-entry="defense"><span class="overline">Personnel Database</span><span class="module-title">Defense</span><span class="module-text">Defensive front, linebackers and secondary with tackling, pressure, coverage and usage.</span><span class="module-action">Open Defensive Intelligence →</span></button></div></div></section>
+<section class="shell hidden" id="shell"><header class="header"><div class="header-inner"><img class="logo" src="ulm_logo_official.png"><div><div class="brand-title">ULM Personnel Intelligence Platform</div><div class="brand-sub" id="brandSub"></div></div><div class="spacer"></div><button class="mode-btn" id="glossaryBtn">Glossary</button><button class="mode-btn" id="modeBtn"></button></div></header><main class="app"><nav class="nav"><button data-nav="home">Home</button><button data-nav="offense">Offense</button><button data-nav="defense">Defense</button></nav><section class="controls"><input id="search" placeholder="Search players or ask a football question"><select id="team"><option>Florida Atlantic</option></select><select id="group"><option value="">All groups</option></select><select id="sort"><option value="snaps">Sort: snaps</option><option value="overallGrade">Overall grade</option><option value="totalYards">Total yards</option><option value="pressures">Pressures</option></select><button class="ask" id="ask">Ask ULM Analytics</button></section><section class="answer" id="answer"></section><section class="summary" id="summary"></section><div class="section-head"><div><div class="section-title" id="title"></div><div class="section-sub" id="subtitle"></div></div><div class="view-toggle"><button class="active" data-view="cards">Card View</button><button data-view="table">Table View</button></div></div><section class="cards" id="cards"></section><section class="table-wrap" id="tableWrap"></section></main></section>
+<div class="shade" id="shade"></div><aside class="drawer" id="drawer"><div class="drawer-bar"><div class="drawer-title" id="drawerTitle"></div><button class="close" id="drawerClose">Close</button></div><div id="drawerBody"></div></aside>
+<div class="shade" id="glossaryShade"></div>
+<aside class="drawer glossary-drawer" id="glossaryDrawer">
+  <div class="drawer-bar">
+    <div class="drawer-title">Analytics Glossary</div>
+    <button class="close" id="glossaryClose">Close</button>
+  </div>
+  <div class="glossary-content">
+    <input class="glossary-search" id="glossarySearch" placeholder="Search abbreviations or football terms">
+    <div class="glossary-list" id="glossaryList"></div>
+  </div>
+</aside>
+<div class="shade" id="compareShade"></div><section class="compare-modal" id="compareModal"><div class="compare-bar"><div class="drawer-title">Compare Players</div><button class="close" id="compareClose">Close</button></div><div class="compare-body" id="compareBody"></div></section>
+<script src="data.js"></script><script src="app.js"></script></body></html>
