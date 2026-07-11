@@ -1,18 +1,23 @@
-ULM Football Intelligence Platform V1.5
+ULM Football Intelligence Platform V1.7
 
-FIXED
-- Offensive Analytics no longer depends on a token in the URL.
-- The existing Florida Atlantic share token is stored internally.
-- The app first loads through get_shared_project/get_shared_plays.
-- A newest-published-project query remains as a fallback.
-- No login is required.
+P & 10 FIX
+The previous build required an explicit possession or drive marker. The current
+Supabase play rows did not provide one, so P & 10 never appeared.
 
-DEPTH CHART
-- Replaced the placeholder with a projected Florida Atlantic 2026 chart.
-- Includes offense, defense, special teams and top incoming players.
-- Third-party grades are intentionally excluded.
-- Incoming-player priority is based on projected role, not grade.
-- Update the chart when FAU publishes its official weekly depth chart.
+This build now identifies the first play of a possession using:
+- Explicit possession/drive IDs or start flags
+- First offensive play of each game
+- A change in the offense from the previous play
+- The play following a punt, turnover, touchdown, safety or end-of-possession event
+- Sequence resets when available
 
-DEPLOYMENT
-Upload every file in this ZIP directly into the GitHub repository root.
+P & 10 is assigned only when that inferred possession-opening play is exactly
+1st down and 10 yards to go.
+
+1st & 10 remains a separate exact bucket for all other first-and-10 plays.
+
+The new bucket is used by:
+- Global down-distance filters
+- First Down Explorer
+- Situations reports
+- Every formation and team table grouped by down-distance
