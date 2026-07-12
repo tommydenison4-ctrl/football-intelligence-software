@@ -817,6 +817,8 @@ function ask(){
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
+ const directPlayerId=Number(new URLSearchParams(location.search).get("player"));
+
  document.querySelectorAll("[data-entry]").forEach(b=>b.addEventListener("click",()=>enter(b.dataset.entry)));
  document.querySelectorAll("[data-nav]").forEach(b=>b.addEventListener("click",()=>b.dataset.nav==="home"?home():(state.page=b.dataset.nav,render())));
  $("#modeBtn").addEventListener("click",()=>{
@@ -837,4 +839,15 @@ document.addEventListener("DOMContentLoaded",()=>{
  document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
  $("#shade").addEventListener("click",closeDrawer);$("#drawerClose").addEventListener("click",closeDrawer);
  $("#compareShade").addEventListener("click",closeCompare);$("#compareClose").addEventListener("click",closeCompare);
+
+ if(Number.isFinite(directPlayerId)&&directPlayerId>0){
+  const directPlayer=DATA.players.find(p=>p.id===directPlayerId);
+  if(directPlayer){
+   state.page=directPlayer.side;
+   state.team=directPlayer.team;
+   state.search=directPlayer.name;
+   enter(directPlayer.side);
+   setTimeout(()=>openPlayer(directPlayer.id),60);
+  }
+ }
 });

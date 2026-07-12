@@ -1,12 +1,12 @@
-ULM Football Intelligence Platform V1.11
+ULM Football Intelligence Platform V1.13
 
-DEFENSIVE REPORT PRESENTATION FIXES
-- Written PFF route names now take priority over numbered route-family codes.
-- Examples include Go, Hitch, Out, Slant, Post, Seam and WR Screen.
-- Rush-count chart labels now include sample size:
-  3 rush (snaps), 4 rush (snaps), etc.
-- Rush-count tables clarify that Plays represents pass snaps.
-- Chart x-axis labels now sit below a separate baseline and no longer run through it.
-- Bar values have a white background so the numbers remain legible against chart elements.
+DEPTH CHART FIXES
+- Player names use exact Player Portal IDs.
+- Clicking a player opens that exact full profile drawer.
+- Added Edit Order mode with Move Up and Move Down controls.
+- Reordered depth charts save on the current device.
+- Reset Order restores the original projected chart.
+- Position chips use precise scrolling with header offset.
+- Previous anchor-link behavior has been removed.
 
-All V1.10 observations, opponent filters and exact down-distance logic remain intact.
+All prior analytics and reports remain intact.

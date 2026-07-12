@@ -54,12 +54,67 @@ main{max-width:1500px;margin:auto;padding:24px 26px}
  .depth-row .player:nth-child(n+4){display:none}
  .incoming-grid{grid-template-columns:1fr 1fr}
 }
-@media(max-width:700px){
- header,nav,main{padding-left:14px;padding-right:14px}.logo{width:48px;height:48px}
- h1{font-size:23px}.hero-top{flex-direction:column}.depth-tabs{overflow-x:auto;flex-wrap:nowrap}
- .depth-row{grid-template-columns:74px 1fr}.depth-row .player:nth-child(n+3){display:none}
- .pos{padding:10px}.player{padding:10px}.incoming-grid{grid-template-columns:1fr}
+
+.player-link{color:inherit;text-decoration:none}
+
+.depth-tools{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.depth-tools button{
+ border:1px solid var(--l);background:#fff;color:var(--n);border-radius:9px;
+ padding:9px 12px;font-weight:900;cursor:pointer
 }
+.depth-tools button.active{background:var(--m);border-color:var(--m);color:#fff}
+.reorder-controls{display:none;gap:6px;margin-top:8px}
+.editing .reorder-controls{display:flex}
+.reorder-controls button{
+ border:1px solid var(--l);background:#fff;color:var(--n);border-radius:7px;
+ padding:6px 9px;font-size:10px;font-weight:900;cursor:pointer
+}
+.reorder-controls button:disabled{opacity:.35;cursor:not-allowed}
+.position-jump button{
+ flex:0 0 auto;text-decoration:none;background:#fff;border:1px solid var(--l);
+ color:var(--n);border-radius:999px;padding:8px 11px;font-size:11px;font-weight:900;
+ cursor:pointer
+}
+
+.player-link:hover{text-decoration:underline}
+.position-jump{display:none}
+@media(max-width:700px){
+ header,nav,main{padding-left:14px;padding-right:14px}
+ .logo{width:48px;height:48px}
+ h1{font-size:23px;line-height:1.08}
+ .hero-top{flex-direction:column}
+ .depth-tabs{
+  overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:6px
+ }
+ .depth-tabs button{flex:0 0 auto;min-width:max-content}
+ .position-jump{
+  display:flex;gap:8px;overflow-x:auto;padding:8px 0 12px;
+  -webkit-overflow-scrolling:touch;position:sticky;top:61px;z-index:15;background:var(--bg)
+ }
+ .position-jump a,.position-jump button{
+  flex:0 0 auto;text-decoration:none;background:#fff;border:1px solid var(--l);
+  color:var(--n);border-radius:999px;padding:8px 11px;font-size:11px;font-weight:900
+ }
+ .group{overflow:visible}
+ .group-head{position:sticky;top:107px;z-index:10}
+ .depth-row{
+  display:block;border:1px solid var(--l);border-radius:12px;margin:10px 0;background:#fff;overflow:hidden
+ }
+ .depth-row .pos{
+  display:block;background:var(--m);color:#fff;padding:10px 12px;font-size:18px;
+  border-bottom:1px solid rgba(255,255,255,.15)
+ }
+ .depth-row .player{
+  display:block!important;border-left:0;border-top:1px solid #edf0f3;min-height:0;padding:12px 14px
+ }
+ .depth-row .player:first-of-type{border-top:0}
+ .depth-row .player.empty{display:none!important}
+ .rank{font-size:9px}
+ .pname{font-size:17px;line-height:1.25}
+ .meta{font-size:11px}
+ .incoming-grid{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -91,76 +146,174 @@ main{max-width:1500px;margin:auto;padding:24px 26px}
  <button data-tab="special">Special Teams</button>
  <button data-tab="incoming">Top Incoming Players</button>
 </div>
+<nav class="position-jump" id="positionJump" aria-label="Position jump"></nav>
+<div class="depth-tools">
+ <button id="editOrderBtn" type="button">Edit Order</button>
+ <button id="resetOrderBtn" type="button">Reset Order</button>
+</div>
 
 <section id="offense" class="section active">
  <div class="group">
   <div class="group-head">Skill Positions <span>Air Raid structure</span></div>
-  <div class="depth-row"><div class="pos">QB</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#10 Caden Veltkamp</div><div class="meta">6'5" · 236 · R-Sr. · WKU</div><div class="badges"><span class="badge returner">Returning starter</span></div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#7 Jordan Magwood</div><div class="meta">6'0" · 205 · So.</div></div>
-   <div class="player"><div class="rank">Third</div><div class="pname">#18 Drew Devillier</div><div class="meta">6'5" · 230 · So. · Rice</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Development</div><div class="pname">#12 Jeremiah Daoud</div><div class="meta">6'3" · 210 · Fr.</div><div class="badges"><span class="badge freshman">Freshman</span></div></div>
+  <div class="depth-row" id="pos-qb"><div class="pos">QB</div>
+   <div class="player" data-player-name="Caden Veltkamp"><div class="rank">Starter</div><div class="pname"><a class="player-link" href="personnel.html?player=156642">#10 Caden Veltkamp</a></div><div class="meta">6'5" · 236 · R-Sr. · WKU</div><div class="badges"><span class="badge returner">Returning starter</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Jordan Magwood"><div class="rank">Backup</div><div class="pname"><a class="player-link" href="personnel.html?player=199666">#7 Jordan Magwood</a></div><div class="meta">6'0" · 205 · So.</div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Drew Devillier"><div class="rank">Third</div><div class="pname">#18 Drew Devillier</div><div class="meta">6'5" · 230 · So. · Rice</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Jeremiah Daoud"><div class="rank">Development</div><div class="pname">#12 Jeremiah Daoud</div><div class="meta">6'3" · 210 · Fr.</div><div class="badges"><span class="badge freshman">Freshman</span><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div></div>
   </div>
-  <div class="depth-row"><div class="pos">RB</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#28 Kaden Shields-Dutton</div><div class="meta">5'11" · 215 · Jr.</div><div class="badges"><span class="badge returner">Returning</span></div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#5 Leonard Farrow</div><div class="meta">R-Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Rotation</div><div class="pname">#21 Ethan Ervin</div><div class="meta">R-Fr.</div></div>
-   <div class="player"><div class="rank">Rotation</div><div class="pname">#20 Joshua Harriott</div><div class="meta">R-Jr.</div></div>
+  <div class="depth-row" id="pos-rb"><div class="pos">RB</div>
+   <div class="player" data-player-name="Kaden Shields-Dutton"><div class="rank">Starter</div><div class="pname"><a class="player-link" href="personnel.html?player=189406">#28 Kaden Shields-Dutton</a></div><div class="meta">5'11" · 215 · Jr.</div><div class="badges"><span class="badge returner">Returning</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Leonard Farrow"><div class="rank">Backup</div><div class="pname">#5 Leonard Farrow</div><div class="meta">R-Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Ethan Ervin"><div class="rank">Rotation</div><div class="pname"><a class="player-link" href="personnel.html?player=199664">#21 Ethan Ervin</a></div><div class="meta">R-Fr.</div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Joshua Harriott"><div class="rank">Rotation</div><div class="pname"><a class="player-link" href="personnel.html?player=169910">#20 Joshua Harriott</a></div><div class="meta">R-Jr.<div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div></div>
   </div>
-  <div class="depth-row"><div class="pos">WR-X</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#9 Dominique Henry</div><div class="meta">5'11" · 190 · R-Sr. · BYU</div><div class="badges"><span class="badge returner">Returning starter</span></div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#6 RJ Garcia II</div><div class="meta">Gr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+  <div class="depth-row" id="pos-wr-x"><div class="pos">WR-X</div>
+   <div class="player" data-player-name="Dominique Henry"><div class="rank">Starter</div><div class="pname"><a class="player-link" href="personnel.html?player=163249">#9 Dominique Henry</a></div><div class="meta">5'11" · 190 · R-Sr. · BYU</div><div class="badges"><span class="badge returner">Returning starter</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="RJ Garcia II"><div class="rank">Backup</div><div class="pname">#6 RJ Garcia II</div><div class="meta">Gr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
    <div class="player empty">—</div><div class="player empty">—</div>
   </div>
-  <div class="depth-row"><div class="pos">WR-Z</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#0 Branden Hoch</div><div class="meta">6'3" · 200 · So.</div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#3 Tucker Holloway</div><div class="meta">R-Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+  <div class="depth-row" id="pos-wr-z"><div class="pos">WR-Z</div>
+   <div class="player" data-player-name="Branden Hoch"><div class="rank">Starter</div><div class="pname"><a class="player-link" href="personnel.html?player=199670">#0 Branden Hoch</a></div><div class="meta">6'3" · 200 · So.</div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Tucker Holloway"><div class="rank">Backup</div><div class="pname">#3 Tucker Holloway</div><div class="meta">R-Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
    <div class="player empty">—</div><div class="player empty">—</div>
   </div>
-  <div class="depth-row"><div class="pos">WR-Y</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#8 Easton Messer</div><div class="meta">5'9" · 190 · R-Sr. · WKU</div><div class="badges"><span class="badge returner">Returning starter</span></div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#4 Antojuan Woody</div><div class="meta">Jr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+  <div class="depth-row" id="pos-wr-y"><div class="pos">WR-Y</div>
+   <div class="player" data-player-name="Easton Messer"><div class="rank">Starter</div><div class="pname"><a class="player-link" href="personnel.html?player=163051">#8 Easton Messer</a></div><div class="meta">5'9" · 190 · R-Sr. · WKU</div><div class="badges"><span class="badge returner">Returning starter</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Antojuan Woody"><div class="rank">Backup</div><div class="pname">#4 Antojuan Woody</div><div class="meta">Jr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
    <div class="player empty">—</div><div class="player empty">—</div>
   </div>
-  <div class="depth-row"><div class="pos">WR-H</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#2 Kelby Valsin</div><div class="meta">6'2" · 195 · R-Jr. · Texas Tech</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#13 Jahmari Powell-Wonson</div><div class="meta">R-So. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+  <div class="depth-row" id="pos-wr-h"><div class="pos">WR-H</div>
+   <div class="player" data-player-name="Kelby Valsin"><div class="rank">Starter</div><div class="pname">#2 Kelby Valsin</div><div class="meta">6'2" · 195 · R-Jr. · Texas Tech</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Jahmari Powell-Wonson"><div class="rank">Backup</div><div class="pname">#13 Jahmari Powell-Wonson</div><div class="meta">R-So. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
    <div class="player empty">—</div><div class="player empty">—</div>
   </div>
-  <div class="depth-row"><div class="pos">TE</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#11 Brooks Johnson</div><div class="meta">6'5" · R-Sr. · Coastal Carolina</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Co-starter</div><div class="pname">#1 AJ Johnson</div><div class="meta">6'4" · 255 · R-Sr. · Villanova</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Rotation</div><div class="pname">#88 Marcus Vinson</div><div class="meta">6'4" · 250 · Sr. · UTEP/New Mexico</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+  <div class="depth-row" id="pos-te"><div class="pos">TE</div>
+   <div class="player" data-player-name="Brooks Johnson"><div class="rank">Starter</div><div class="pname">#11 Brooks Johnson</div><div class="meta">6'5" · R-Sr. · Coastal Carolina</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="AJ Johnson"><div class="rank">Co-starter</div><div class="pname">#1 AJ Johnson</div><div class="meta">6'4" · 255 · R-Sr. · Villanova</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Marcus Vinson"><div class="rank">Rotation</div><div class="pname">#88 Marcus Vinson</div><div class="meta">6'4" · 250 · Sr. · UTEP/New Mexico</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
    <div class="player empty">—</div>
   </div>
  </div>
 
  <div class="group">
   <div class="group-head">Offensive Line <span>Projected summer order</span></div>
-  <div class="depth-row"><div class="pos">LT</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#57 Ja'Kavion Nonar</div><div class="meta">6'8" · 315 · R-Sr. · Maryland</div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#73 Kortez Winslow</div><div class="meta">6'5" · 315 · R-Jr. · Lamar</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Depth</div><div class="pname">#77 Keon Rohé</div><div class="meta">R-So.</div></div><div class="player empty">—</div>
+  <div class="depth-row" id="pos-lt"><div class="pos">LT</div>
+   <div class="player" data-player-name="Ja'Kavion Nonar"><div class="rank">Starter</div><div class="pname"><a class="player-link" href="personnel.html?player=162800">#57 Ja'Kavion Nonar</a></div><div class="meta">6'8" · 315 · R-Sr. · Maryland</div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Kortez Winslow"><div class="rank">Backup</div><div class="pname">#73 Kortez Winslow</div><div class="meta">6'5" · 315 · R-Jr. · Lamar</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Keon Rohé"><div class="rank">Depth</div><div class="pname">#77 Keon Rohé</div><div class="meta">R-So.</div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div><div class="player empty">—</div>
   </div>
-  <div class="depth-row"><div class="pos">LG</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#78 Carson Osmus</div><div class="meta">R-So. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#67 Alejandro Schmitt</div><div class="meta">Fr.</div><div class="badges"><span class="badge freshman">Freshman</span></div></div>
+  <div class="depth-row" id="pos-lg"><div class="pos">LG</div>
+   <div class="player" data-player-name="Carson Osmus"><div class="rank">Starter</div><div class="pname">#78 Carson Osmus</div><div class="meta">R-So. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Alejandro Schmitt"><div class="rank">Backup</div><div class="pname">#67 Alejandro Schmitt</div><div class="meta">Fr.</div><div class="badges"><span class="badge freshman">Freshman</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
    <div class="player empty">—</div><div class="player empty">—</div>
   </div>
-  <div class="depth-row"><div class="pos">C</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#65 Braden Cunningham</div><div class="meta">R-So.</div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#60 Aqil Meredith-Smith</div><div class="meta">So. · LIU</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+  <div class="depth-row" id="pos-c"><div class="pos">C</div>
+   <div class="player" data-player-name="Braden Cunningham"><div class="rank">Starter</div><div class="pname"><a class="player-link" href="personnel.html?player=183402">#65 Braden Cunningham</a></div><div class="meta">R-So.</div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Aqil Meredith-Smith"><div class="rank">Backup</div><div class="pname">#60 Aqil Meredith-Smith</div><div class="meta">So. · LIU</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
    <div class="player empty">—</div><div class="player empty">—</div>
   </div>
-  <div class="depth-row"><div class="pos">RG</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#62 Vincent Fiacable</div><div class="meta">6'4" · 320 · R-Sr. · Indiana</div><div class="badges"><span class="badge returner">Returning starter</span></div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#72 Ovie Dubre</div><div class="meta">R-Jr.</div></div>
+  <div class="depth-row" id="pos-rg"><div class="pos">RG</div>
+   <div class="player" data-player-name="Vincent Fiacable"><div class="rank">Starter</div><div class="pname"><a class="player-link" href="personnel.html?player=144836">#62 Vincent Fiacable</a></div><div class="meta">6'4" · 320 · R-Sr. · Indiana</div><div class="badges"><span class="badge returner">Returning starter</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Ovie Dubre"><div class="rank">Backup</div><div class="pname"><a class="player-link" href="personnel.html?player=169908">#72 Ovie Dubre</a></div><div class="meta">R-Jr.</div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
    <div class="player empty">—</div><div class="player empty">—</div>
   </div>
-  <div class="depth-row"><div class="pos">RT</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#74 Ben Galloway</div><div class="meta">6'4" · 310 · R-Jr. · Georgia Tech</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#75 Mauricio Hinds</div><div class="meta">R-So.</div></div>
-   <div class="player"><div class="rank">Depth</div><div class="pname">#64 Vincent Forney</div><div class="meta">R-So. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div><div class="player empty">—</div>
+  <div class="depth-row" id="pos-rt"><div class="pos">RT</div>
+   <div class="player" data-player-name="Ben Galloway"><div class="rank">Starter</div><div class="pname">#74 Ben Galloway</div><div class="meta">6'4" · 310 · R-Jr. · Georgia Tech</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Mauricio Hinds"><div class="rank">Backup</div><div class="pname"><a class="player-link" href="personnel.html?player=183406">#75 Mauricio Hinds</a></div><div class="meta">R-So.</div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Vincent Forney"><div class="rank">Depth</div><div class="pname"><a class="player-link" href="personnel.html?player=193336">#64 Vincent Forney</a></div><div class="meta">R-So. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div><div class="player empty">—</div>
   </div>
  </div>
 </section>
@@ -168,63 +321,150 @@ main{max-width:1500px;margin:auto;padding:24px 26px}
 <section id="defense" class="section">
  <div class="group">
   <div class="group-head">Defensive Front <span>Multiple 4-2-5</span></div>
-  <div class="depth-row"><div class="pos">DE</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#5 Deshaun Batiste</div><div class="meta">6'3" · 258 · R-Sr. · Troy/Tulane</div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#11 Gavench Marcelin</div><div class="meta">Jr.</div></div>
-   <div class="player"><div class="rank">Depth</div><div class="pname">#15 Tyclean Luman</div><div class="meta">R-So. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div><div class="player empty">—</div>
+  <div class="depth-row" id="pos-de"><div class="pos">DE</div>
+   <div class="player" data-player-name="Deshaun Batiste"><div class="rank">Starter</div><div class="pname"><a class="player-link" href="personnel.html?player=172340">#5 Deshaun Batiste</a></div><div class="meta">6'3" · 258 · R-Sr. · Troy/Tulane</div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Gavench Marcelin"><div class="rank">Backup</div><div class="pname"><a class="player-link" href="personnel.html?player=183412">#11 Gavench Marcelin</a></div><div class="meta">Jr.</div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Tyclean Luman"><div class="rank">Depth</div><div class="pname"><a class="player-link" href="personnel.html?player=190482">#15 Tyclean Luman</a></div><div class="meta">R-So. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div><div class="player empty">—</div>
   </div>
-  <div class="depth-row"><div class="pos">NT</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#1 CJ Doggette Jr.</div><div class="meta">6'2" · 277 · R-Sr. · Cincinnati/Ohio</div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#62 Enyce Sledge</div><div class="meta">R-Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Rotation</div><div class="pname">#94 Corey Clark</div><div class="meta">Sr. · Mississippi State</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Rotation</div><div class="pname">#13 Earl Miller Jr.</div><div class="meta">Gr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+  <div class="depth-row" id="pos-nt"><div class="pos">NT</div>
+   <div class="player" data-player-name="CJ Doggette Jr."><div class="rank">Starter</div><div class="pname"><a class="player-link" href="personnel.html?player=164141">#1 CJ Doggette Jr.</a></div><div class="meta">6'2" · 277 · R-Sr. · Cincinnati/Ohio</div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Enyce Sledge"><div class="rank">Backup</div><div class="pname"><a class="player-link" href="personnel.html?player=157044">#62 Enyce Sledge</a></div><div class="meta">R-Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Corey Clark"><div class="rank">Rotation</div><div class="pname">#94 Corey Clark</div><div class="meta">Sr. · Mississippi State</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Earl Miller Jr."><div class="rank">Rotation</div><div class="pname"><a class="player-link" href="personnel.html?player=148219">#13 Earl Miller Jr.</a></div><div class="meta">Gr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div></div>
   </div>
-  <div class="depth-row"><div class="pos">DT</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#98 Blake Burris</div><div class="meta">Gr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#2 Wilky Denaud</div><div class="meta">6'3" · 285 · R-Jr. · Mississippi State</div></div>
-   <div class="player"><div class="rank">Rotation</div><div class="pname">#14 Tycoolhill Luman</div><div class="meta">R-So. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div><div class="player empty">—</div>
+  <div class="depth-row" id="pos-dt"><div class="pos">DT</div>
+   <div class="player" data-player-name="Blake Burris"><div class="rank">Starter</div><div class="pname">#98 Blake Burris</div><div class="meta">Gr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Wilky Denaud"><div class="rank">Backup</div><div class="pname"><a class="player-link" href="personnel.html?player=172445">#2 Wilky Denaud</a></div><div class="meta">6'3" · 285 · R-Jr. · Mississippi State</div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Tycoolhill Luman"><div class="rank">Rotation</div><div class="pname"><a class="player-link" href="personnel.html?player=190483">#14 Tycoolhill Luman</a></div><div class="meta">R-So. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div><div class="player empty">—</div>
   </div>
-  <div class="depth-row"><div class="pos">RUSH</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#10 Josh Roberts</div><div class="meta">6'4" · 220 · So.</div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#12 Jay Crable</div><div class="meta">R-Jr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Rotation</div><div class="pname">#9 Jonathan Bax</div><div class="meta">Sr. · TCU</div><div class="badges"><span class="badge transfer">Transfer</span></div></div><div class="player empty">—</div>
+  <div class="depth-row" id="pos-rush"><div class="pos">RUSH</div>
+   <div class="player" data-player-name="Josh Roberts"><div class="rank">Starter</div><div class="pname"><a class="player-link" href="personnel.html?player=199661">#10 Josh Roberts</a></div><div class="meta">6'4" · 220 · So.</div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Jay Crable"><div class="rank">Backup</div><div class="pname">#12 Jay Crable</div><div class="meta">R-Jr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Jonathan Bax"><div class="rank">Rotation</div><div class="pname">#9 Jonathan Bax</div><div class="meta">Sr. · TCU</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div><div class="player empty">—</div>
   </div>
  </div>
 
  <div class="group">
   <div class="group-head">Linebackers & Secondary <span>Projected summer order</span></div>
-  <div class="depth-row"><div class="pos">WLB</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#6 Leon Hart Jr.</div><div class="meta">R-Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#7 Khmari Johnson</div><div class="meta">Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Depth</div><div class="pname">#17 Char'Quez Lee</div><div class="meta">R-So.</div></div><div class="player empty">—</div>
+  <div class="depth-row" id="pos-wlb"><div class="pos">WLB</div>
+   <div class="player" data-player-name="Leon Hart Jr."><div class="rank">Starter</div><div class="pname"><a class="player-link" href="personnel.html?player=156811">#6 Leon Hart Jr.</a></div><div class="meta">R-Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Khmari Johnson"><div class="rank">Backup</div><div class="pname"><a class="player-link" href="personnel.html?player=199657">#7 Khmari Johnson</a></div><div class="meta">Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Char'Quez Lee"><div class="rank">Depth</div><div class="pname"><a class="player-link" href="personnel.html?player=183411">#17 Char'Quez Lee</a></div><div class="meta">R-So.</div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div><div class="player empty">—</div>
   </div>
-  <div class="depth-row"><div class="pos">MLB</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#18 Joseph Sipp Jr.</div><div class="meta">6'0" · 210 · R-Sr. · Bowling Green/Kansas</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#28 Zyere Horton</div><div class="meta">R-Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Depth</div><div class="pname">#21 Nate Fischer</div><div class="meta">Jr. · San Diego</div><div class="badges"><span class="badge transfer">Transfer</span></div></div><div class="player empty">—</div>
+  <div class="depth-row" id="pos-mlb"><div class="pos">MLB</div>
+   <div class="player" data-player-name="Joseph Sipp Jr."><div class="rank">Starter</div><div class="pname">#18 Joseph Sipp Jr.</div><div class="meta">6'0" · 210 · R-Sr. · Bowling Green/Kansas</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Zyere Horton"><div class="rank">Backup</div><div class="pname"><a class="player-link" href="personnel.html?player=158351">#28 Zyere Horton</a></div><div class="meta">R-Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Nate Fischer"><div class="rank">Depth</div><div class="pname">#21 Nate Fischer</div><div class="meta">Jr. · San Diego</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div><div class="player empty">—</div>
   </div>
-  <div class="depth-row"><div class="pos">LCB</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#4 Damarius McGhee</div><div class="meta">6'0" · 183 · Gr. · LSU/Kansas</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#3 Derrick Rogers</div><div class="meta">R-Jr. · Purdue</div></div>
-   <div class="player"><div class="rank">Depth</div><div class="pname">#26 Amar Reynolds</div><div class="meta">So. · Illinois</div><div class="badges"><span class="badge transfer">Transfer</span></div></div><div class="player empty">—</div>
+  <div class="depth-row" id="pos-lcb"><div class="pos">LCB</div>
+   <div class="player" data-player-name="Damarius McGhee"><div class="rank">Starter</div><div class="pname"><a class="player-link" href="personnel.html?player=146778">#4 Damarius McGhee</a></div><div class="meta">6'0" · 183 · Gr. · LSU/Kansas</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Derrick Rogers"><div class="rank">Backup</div><div class="pname"><a class="player-link" href="personnel.html?player=174967">#3 Derrick Rogers</a></div><div class="meta">R-Jr. · Purdue</div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Amar Reynolds"><div class="rank">Depth</div><div class="pname">#26 Amar Reynolds</div><div class="meta">So. · Illinois</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div><div class="player empty">—</div>
   </div>
-  <div class="depth-row"><div class="pos">RCB</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#23 JK Johnson</div><div class="meta">R-Sr. · Ohio State/LSU/Oklahoma State</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#16 Wallace Foster IV</div><div class="meta">R-So. · LSU</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+  <div class="depth-row" id="pos-rcb"><div class="pos">RCB</div>
+   <div class="player" data-player-name="JK Johnson"><div class="rank">Starter</div><div class="pname">#23 JK Johnson</div><div class="meta">R-Sr. · Ohio State/LSU/Oklahoma State</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Wallace Foster IV"><div class="rank">Backup</div><div class="pname">#16 Wallace Foster IV</div><div class="meta">R-So. · LSU</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
    <div class="player empty">—</div><div class="player empty">—</div>
   </div>
-  <div class="depth-row"><div class="pos">NB</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#0 Damon Allen</div><div class="meta">6'1" · 200 · So.</div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#8 Chris Tooley III</div><div class="meta">6'0" · 180 · R-Jr.</div></div>
+  <div class="depth-row" id="pos-nb"><div class="pos">NB</div>
+   <div class="player" data-player-name="Damon Allen"><div class="rank">Starter</div><div class="pname"><a class="player-link" href="personnel.html?player=199672">#0 Damon Allen</a></div><div class="meta">6'1" · 200 · So.</div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Chris Tooley III"><div class="rank">Backup</div><div class="pname"><a class="player-link" href="personnel.html?player=169928">#8 Chris Tooley III</a></div><div class="meta">6'0" · 180 · R-Jr.</div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
    <div class="player empty">—</div><div class="player empty">—</div>
   </div>
-  <div class="depth-row"><div class="pos">SS</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#22 Jayden Sweeney</div><div class="meta">R-Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#20 Bo Simpson-Nealy</div><div class="meta">R-Jr. · Western Carolina</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+  <div class="depth-row" id="pos-ss"><div class="pos">SS</div>
+   <div class="player" data-player-name="Jayden Sweeney"><div class="rank">Starter</div><div class="pname">#22 Jayden Sweeney</div><div class="meta">R-Sr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Bo Simpson-Nealy"><div class="rank">Backup</div><div class="pname">#20 Bo Simpson-Nealy</div><div class="meta">R-Jr. · Western Carolina</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
    <div class="player empty">—</div><div class="player empty">—</div>
   </div>
-  <div class="depth-row"><div class="pos">FS</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#19 Tyson Rooks</div><div class="meta">6'5" · 180 · R-Sr. · Illinois</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
+  <div class="depth-row" id="pos-fs"><div class="pos">FS</div>
+   <div class="player" data-player-name="Tyson Rooks"><div class="rank">Starter</div><div class="pname">#19 Tyson Rooks</div><div class="meta">6'5" · 180 · R-Sr. · Illinois</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
    <div class="player empty">No established second listed</div><div class="player empty">—</div><div class="player empty">—</div>
   </div>
  </div>
@@ -233,24 +473,48 @@ main{max-width:1500px;margin:auto;padding:24px 26px}
 <section id="special" class="section">
  <div class="group">
   <div class="group-head">Special Teams <span>Projected summer order</span></div>
-  <div class="depth-row"><div class="pos">P</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#91 Reed Chandley</div><div class="meta">Jr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#49 Alex Grace</div><div class="meta">R-So. · Transfer</div></div><div class="player empty">—</div><div class="player empty">—</div>
+  <div class="depth-row" id="pos-p"><div class="pos">P</div>
+   <div class="player" data-player-name="Reed Chandley"><div class="rank">Starter</div><div class="pname">#91 Reed Chandley</div><div class="meta">Jr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Alex Grace"><div class="rank">Backup</div><div class="pname">#49 Alex Grace</div><div class="meta">R-So. · Transfer</div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div><div class="player empty">—</div><div class="player empty">—</div>
   </div>
-  <div class="depth-row"><div class="pos">K / KO</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#41 Collin Rogers</div><div class="meta">6'4" · 185 · R-Sr. · SMU</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#96 Lliam Peterson</div><div class="meta">Fr.</div><div class="badges"><span class="badge freshman">Freshman</span></div></div><div class="player empty">—</div><div class="player empty">—</div>
+  <div class="depth-row" id="pos-k-ko"><div class="pos">K / KO</div>
+   <div class="player" data-player-name="Collin Rogers"><div class="rank">Starter</div><div class="pname">#41 Collin Rogers</div><div class="meta">6'4" · 185 · R-Sr. · SMU</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Lliam Peterson"><div class="rank">Backup</div><div class="pname">#96 Lliam Peterson</div><div class="meta">Fr.</div><div class="badges"><span class="badge freshman">Freshman</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div><div class="player empty">—</div><div class="player empty">—</div>
   </div>
-  <div class="depth-row"><div class="pos">LS</div>
-   <div class="player"><div class="rank">Starter</div><div class="pname">#45 Walker Adkinson</div><div class="meta">Gr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div></div>
-   <div class="player"><div class="rank">Backup</div><div class="pname">#46 Blake Thomas</div><div class="meta">Fr.</div><div class="badges"><span class="badge freshman">Freshman</span></div></div><div class="player empty">—</div><div class="player empty">—</div>
+  <div class="depth-row" id="pos-ls"><div class="pos">LS</div>
+   <div class="player" data-player-name="Walker Adkinson"><div class="rank">Starter</div><div class="pname">#45 Walker Adkinson</div><div class="meta">Gr. · Transfer</div><div class="badges"><span class="badge transfer">Transfer</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
+   <div class="player" data-player-name="Blake Thomas"><div class="rank">Backup</div><div class="pname">#46 Blake Thomas</div><div class="meta">Fr.</div><div class="badges"><span class="badge freshman">Freshman</span></div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div><div class="player empty">—</div><div class="player empty">—</div>
   </div>
-  <div class="depth-row"><div class="pos">PR</div>
-   <div class="player"><div class="rank">Primary</div><div class="pname">#8 Easton Messer</div><div class="meta">WR · Returning starter</div></div>
+  <div class="depth-row" id="pos-pr"><div class="pos">PR</div>
+   <div class="player" data-player-name="Easton Messer"><div class="rank">Primary</div><div class="pname"><a class="player-link" href="personnel.html?player=163051">#8 Easton Messer</a></div><div class="meta">WR · Returning starter</div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
    <div class="player empty">—</div><div class="player empty">—</div><div class="player empty">—</div>
   </div>
-  <div class="depth-row"><div class="pos">KR</div>
-   <div class="player"><div class="rank">Primary</div><div class="pname">#4 Antojuan Woody</div><div class="meta">WR · Transfer</div></div>
+  <div class="depth-row" id="pos-kr"><div class="pos">KR</div>
+   <div class="player" data-player-name="Antojuan Woody"><div class="rank">Primary</div><div class="pname">#4 Antojuan Woody</div><div class="meta">WR · Transfer</div><div class="reorder-controls">
+      <button type="button" data-move="up">Move Up</button>
+      <button type="button" data-move="down">Move Down</button>
+    </div></div>
    <div class="player empty">—</div><div class="player empty">—</div><div class="player empty">—</div>
   </div>
  </div>
@@ -272,14 +536,129 @@ main{max-width:1500px;margin:auto;padding:24px 26px}
 </section>
 </main>
 <script>
+const ORDER_KEY="ulm_depth_chart_order_v1";
+let editing=false;
+
+function activeSection(){
+ return document.querySelector(".section.active");
+}
+function updatePositionJump(sectionId){
+ const jump=document.getElementById("positionJump");
+ const section=document.getElementById(sectionId);
+ if(!jump||!section)return;
+ const rows=[...section.querySelectorAll(".depth-row")];
+ jump.innerHTML=rows.map((row,index)=>{
+  const pos=row.querySelector(".pos")?.textContent?.trim();
+  return pos?`<button type="button" data-jump-index="${index}">${pos}</button>`:"";
+ }).join("");
+ jump.style.display=rows.length?"flex":"none";
+ jump.querySelectorAll("[data-jump-index]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+   const target=rows[Number(btn.dataset.jumpIndex)];
+   if(!target)return;
+   const stickyOffset=150;
+   const y=target.getBoundingClientRect().top+window.scrollY-stickyOffset;
+   window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
+  });
+ });
+}
+function rowKey(row){
+ const section=row.closest(".section")?.id||"unknown";
+ const pos=row.querySelector(".pos")?.textContent?.trim()||"position";
+ return `${section}::${pos}`;
+}
+function playerElements(row){
+ return [...row.querySelectorAll(":scope > .player:not(.empty)")];
+}
+function saveOrder(){
+ const saved={};
+ document.querySelectorAll(".depth-row").forEach(row=>{
+  saved[rowKey(row)]=playerElements(row).map(p=>p.dataset.playerName);
+ });
+ localStorage.setItem(ORDER_KEY,JSON.stringify(saved));
+}
+function applySavedOrder(){
+ let saved={};
+ try{saved=JSON.parse(localStorage.getItem(ORDER_KEY)||"{}")}catch{}
+ document.querySelectorAll(".depth-row").forEach(row=>{
+  const order=saved[rowKey(row)];
+  if(!Array.isArray(order)||!order.length)return;
+  const players=playerElements(row);
+  const map=new Map(players.map(p=>[p.dataset.playerName,p]));
+  order.forEach(name=>{
+   const el=map.get(name);
+   if(el)row.appendChild(el);
+  });
+  players.filter(p=>!order.includes(p.dataset.playerName)).forEach(p=>row.appendChild(p));
+  updateRankLabels(row);
+ });
+}
+function updateRankLabels(row){
+ const labels=["Starter","Backup","Third","Development"];
+ playerElements(row).forEach((player,index)=>{
+  const rank=player.querySelector(".rank");
+  if(rank)rank.textContent=labels[index]||`Depth ${index+1}`;
+ });
+ updateMoveButtons(row);
+}
+function updateMoveButtons(row){
+ const players=playerElements(row);
+ players.forEach((player,index)=>{
+  const up=player.querySelector('[data-move="up"]');
+  const down=player.querySelector('[data-move="down"]');
+  if(up)up.disabled=index===0;
+  if(down)down.disabled=index===players.length-1;
+ });
+}
+function bindReorderButtons(){
+ document.querySelectorAll(".depth-row").forEach(row=>{
+  playerElements(row).forEach(player=>{
+   player.querySelectorAll("[data-move]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+     const players=playerElements(row);
+     const index=players.indexOf(player);
+     if(btn.dataset.move==="up"&&index>0){
+      row.insertBefore(player,players[index-1]);
+     }else if(btn.dataset.move==="down"&&index<players.length-1){
+      row.insertBefore(players[index+1],player);
+     }
+     updateRankLabels(row);
+     saveOrder();
+    });
+   });
+  });
+  updateMoveButtons(row);
+ });
+}
+function setEditing(value){
+ editing=value;
+ document.body.classList.toggle("editing",editing);
+ const btn=document.getElementById("editOrderBtn");
+ btn.classList.toggle("active",editing);
+ btn.textContent=editing?"Done Editing":"Edit Order";
+}
+
 document.querySelectorAll(".depth-tabs button").forEach(btn=>{
  btn.addEventListener("click",()=>{
   document.querySelectorAll(".depth-tabs button").forEach(x=>x.classList.remove("active"));
   document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));
   btn.classList.add("active");
   document.getElementById(btn.dataset.tab).classList.add("active");
+  updatePositionJump(btn.dataset.tab);
+  const y=document.querySelector(".depth-tabs").getBoundingClientRect().top+window.scrollY-75;
+  window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
  });
 });
+
+document.getElementById("editOrderBtn").addEventListener("click",()=>setEditing(!editing));
+document.getElementById("resetOrderBtn").addEventListener("click",()=>{
+ localStorage.removeItem(ORDER_KEY);
+ location.reload();
+});
+
+applySavedOrder();
+bindReorderButtons();
+updatePositionJump("offense");
 </script>
 </body>
 </html>
