@@ -116,8 +116,19 @@ main{max-width:1500px;margin:auto;padding:24px 26px}
 }
 
 </style>
+
+<style>
+.workspace-switch{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.workspace-switch label{font-size:9px;text-transform:uppercase;color:#687287;font-weight:900}
+.workspace-switch select{padding:9px 11px;border:1px solid #d9dee7;border-radius:8px;background:#fff;color:#0b1f3a;font-weight:900}
+</style>
 </head>
-<body>
+<body><div class="workspace-switch" style="padding:12px 20px;background:#fff;border-bottom:1px solid #d9dee7">
+<label>Opponent Depth Chart</label>
+<select onchange="location.href=this.value">
+<option value="depth-chart.html" selected>Florida Atlantic</option>
+<option value="uab-depth-chart.html">UAB</option>
+</select></div>
 <header>
  <div class="brand">
   <img class="logo" src="ulm_logo_official.png" alt="ULM logo">

@@ -81,6 +81,21 @@ button{background:var(--m);color:white;border:0;border-radius:8px;padding:10px 1
 .public-error h2{margin-top:0;color:var(--m)}
 @media(max-width:700px){.public-notice{margin:10px 14px 0}}
 </style>
+
+<style>
+.opponent-workspace-switch{
+ display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+ padding:12px 28px;background:#fff;border-bottom:1px solid #d9dee7
+}
+.opponent-workspace-switch label{
+ font-size:10px;text-transform:uppercase;color:#687287;font-weight:900;letter-spacing:.05em
+}
+.opponent-workspace-switch select{
+ padding:9px 11px;border:1px solid #d9dee7;border-radius:8px;
+ background:#fff;color:#0b1f3a;font-weight:900
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -97,7 +112,14 @@ button{background:var(--m);color:white;border:0;border-radius:8px;padding:10px 1
   <a href="defense.html">Defensive Analytics</a>
   <a href="personnel.html">Player Portal</a>
   <a href="depth-chart.html">Depth Chart</a>
-</nav><div class="public-notice">Open staff access · Florida Atlantic loads automatically</div>
+</nav><div class="opponent-workspace-switch">
+<label>Opponent Defense Workspace</label>
+<select onchange="if(this.value) location.href=this.value">
+<option value="offense.html" selected>Florida Atlantic Defense</option>
+<option value="uab-defense.html">UAB Defense — Oklahoma State / Todd Grantham</option>
+</select>
+</div>
+<div class="public-notice">Open staff access · Florida Atlantic loads automatically</div>
 
 
 <div id="status" class="status"><span>Loading...</span></div>
@@ -114,7 +136,9 @@ button{background:var(--m);color:white;border:0;border-radius:8px;padding:10px 1
 const SUPABASE_URL="https://hzrosmevuejjlxigdxmg.supabase.co";
 const SUPABASE_KEY="sb_publishable_FtmUeN1QkLlkRIqCIdQ5gw_KDbEFy1H";
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const TEAM={ALBI:"UAB",CTUN:"Connecticut",FLAT:"Florida Atlantic",FLIN:"Florida International",FLSO:"South Florida",LATU:"Tulane",MDNA:"Navy",MDUN:"Maryland",NCEA:"East Carolina",OKTU:"Tulsa",TNMS:"Memphis",TXRI:"Rice"};
+const TEAM={"ALBI":"UAB","UAB":"UAB","OKST":"Oklahoma State","OKSU":"Oklahoma State","FLAT":"Florida Atlantic","FAU":"Florida Atlantic","MDUN":"Maryland","CTUN":"Connecticut","FLSO":"South Florida","FLIN":"Florida International","LATU":"Tulane","MDNA":"Navy","NCEA":"East Carolina","OKTU":"Tulsa","TNMS":"Memphis","TXRI":"Rice","USA":"South Alabama","SALA":"South Alabama","ULM":"ULM","LAMO":"ULM","TENN":"Tennessee","UTM":"UT Martin","TXST":"Texas State","USM":"Southern Miss","MEMP":"Memphis","PURD":"Purdue","UGA":"Georgia","WVU":"West Virginia","BYU":"BYU"};
+function cleanDisplay(v){ if(v===null||v===undefined)return ""; const raw=String(v).trim(); const noDecimal=/^-?\d+\.0$/.test(raw)?raw.slice(0,-2):raw; return TEAM[noDecimal.toUpperCase()]||noDecimal;}
+
 
 let session={public:true},currentProject=null,plays=[],filtered=[],tab="Dashboard",readOnly=true,projectionRate=70;
 let filters={offense:"All",defense:"All",formation:"All",personnel:"All",advantage:"All",fzGiven:"All",fzAttacked:"All",downDistance:"All",runPass:"All",route:"All",rushers:"All"};
@@ -235,7 +259,7 @@ function sum(label,p){
  const dropbacks=p.filter(x=>x.run_pass==="P");
  return{label,plays:p.length,ypp:avg(p.map(x=>Number(x.yards))),median:med(p.map(x=>Number(x.yards))),first:pct(p.filter(x=>x.first_down).length,p.length),epa:avg(p.map(x=>Number(x.epa))),expl:pct(p.filter(x=>x.explosive).length,p.length),neg:pct(p.filter(x=>x.negative).length,p.length),sack:pct(dropbacks.filter(isSack).length,dropbacks.length),intr:pct(pass.filter(isInterception).length,pass.length),scr:pct(dropbacks.filter(isScramble).length,dropbacks.length),comp:pct(pass.filter(isCompletedPass).length,pass.length),adv:pct(p.filter(x=>x.num_advantage===true).length,p.length),td:pct(p.filter(x=>x.touchdown).length,p.length)}
 }
-function group(p,key){return p.reduce((a,x)=>{const k=x[key]||"-";(a[k]??=[]).push(x);return a},{})}
+function group(p,key){return p.reduce((a,x)=>{const k=cleanDisplay(x[key])||"-";(a[k]??=[]).push(x);return a},{})}
 function metricRows(p,key,min=1){return Object.entries(group(p,key)).map(([k,v])=>sum(k,v)).filter(r=>r.plays>=min)}
 function table(rows){return`<div class=tw><table><thead><tr><th>Label</th><th>Plays</th><th>YPP</th><th>Med</th><th>1st %</th><th>EPA</th><th>Expl %</th><th>Neg %</th><th>Sack %</th><th>INT %</th><th>Scr %</th><th>Comp %</th><th>Adv %</th></tr></thead><tbody>`+rows.map(r=>`<tr><td>${r.label}</td><td>${r.plays}</td><td>${f(r.ypp)}</td><td>${f(r.median,1)}</td><td>${fp(r.first)}</td><td>${f(r.epa)}</td><td>${fp(r.expl)}</td><td>${fp(r.neg)}</td><td>${fp(r.sack)}</td><td>${fp(r.intr)}</td><td>${fp(r.scr)}</td><td>${fp(r.comp)}</td><td>${fp(r.adv)}</td></tr>`).join("")+"</tbody></table></div>"}
 function cards(r){return`<div class=cards>${[["Plays",r.plays,""],["Yards / Play",f(r.ypp),"Median "+f(r.median,1)],["Advantage Rate",fp(r.adv),""],["First Down %",fp(r.first),""],["Negative %",fp(r.neg),""],["Completion %",fp(r.comp),""]].map(x=>`<div class=metric><div class=mt>${x[0]}</div><div class=mv>${x[1]}</div>${x[2]?`<div class=ms>${x[2]}</div>`:""}</div>`).join("")}</div>`}

@@ -1,12 +1,14 @@
-ULM Football Intelligence Platform V1.13
+ULM Football Intelligence Platform — Names, Formations and UAB Bios
 
-DEPTH CHART FIXES
-- Player names use exact Player Portal IDs.
-- Clicking a player opens that exact full profile drawer.
-- Added Edit Order mode with Move Up and Move Down controls.
-- Reordered depth charts save on the current device.
-- Reset Order restores the original projected chart.
-- Position chips use precise scrolling with header offset.
-- Previous anchor-link behavior has been removed.
+Updates:
+- PFF team codes display as actual school names.
+- Integer-like formations and personnel labels are normalized:
+  31.0 -> 31
+  11.0 -> 11
+- UAB analytics uses the same cleaned display rules as Florida Atlantic.
+- UAB Player Portal now includes official UAB photos for 40 current players.
+- Each UAB card opens a full in-app profile drawer.
+- Each profile includes a player-specific official UAB bio link.
+- Florida Atlantic remains the default workspace.
 
-All prior analytics and reports remain intact.
+Upload all files to the root of the existing GitHub repository and commit.
