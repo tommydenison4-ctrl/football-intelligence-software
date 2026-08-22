@@ -9,7 +9,7 @@
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script src="platform.js"></script>
 <style>
-.admin{max-width:1380px;margin:26px auto;padding:0 18px 50px}.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 8px 24px rgba(16,24,40,.05)}.panel h2{margin:0 0 8px}.muted{font-size:12px;color:var(--muted);line-height:1.55}.checks{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}.check{border:1px solid var(--line);border-radius:11px;padding:13px}.check b{display:block;color:var(--ulm);font-size:22px}.check span{font-size:10px;color:var(--muted)}.ok{color:#1d9b57!important}.warn{color:#a15c00!important}.danger{color:#b42318!important}.code{background:#101828;color:#d0d5dd;border-radius:10px;padding:13px;overflow:auto;font:12px monospace}.auth-row,.upload-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}.upload-grid{grid-template-columns:1.2fr 1fr 1fr}.field label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:900;color:var(--muted);margin-bottom:5px}.field input,.field select{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px;background:#fff}.btn{border:0;border-radius:9px;background:var(--ulm);color:#fff;padding:11px 14px;font-weight:900;cursor:pointer}.btn.secondary{background:var(--navy)}.btn.ghost{background:#fff;color:var(--ulm);border:1px solid var(--line)}.btn:disabled{opacity:.45;cursor:not-allowed}.statusline{margin-top:10px;font-size:12px;font-weight:800}.team-table{width:100%;border-collapse:collapse;margin-top:14px;font-size:12px}.team-table th{background:#f7f9fc;color:#475467;text-align:left;padding:9px;border-bottom:1px solid var(--line)}.team-table td{padding:9px;border-bottom:1px solid #edf0f3;vertical-align:middle}.badge{display:inline-block;border-radius:999px;padding:4px 7px;font-size:9px;font-weight:900;text-transform:uppercase}.badge.scheme{background:#fff3d6;color:#7a5200}.badge.include{background:#e7f5ec;color:#176b40}.badge.exclude{background:#feeceb;color:#9b1c1c}.summary{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}.metric{border:1px solid var(--line);border-top:4px solid var(--gold);border-radius:12px;padding:12px}.metric b{font-size:24px;color:var(--ulm);display:block}.metric span{font-size:9px;color:var(--muted);text-transform:uppercase;font-weight:900}.progress{height:12px;background:#edf1f5;border-radius:999px;overflow:hidden;margin-top:12px}.progress>div{height:100%;width:0;background:var(--ulm);transition:.2s}.special{border-left:5px solid var(--gold);background:#fffaf0}.small{font-size:10px;color:var(--muted)}@media(max-width:900px){.checks,.summary{grid-template-columns:1fr 1fr}.auth-row,.upload-grid{grid-template-columns:1fr}.team-table{font-size:10px}}@media(max-width:600px){.checks,.summary{grid-template-columns:1fr}}
+.admin{max-width:1380px;margin:26px auto;padding:0 18px 50px}.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 8px 24px rgba(16,24,40,.05)}.panel h2{margin:0 0 8px}.muted{font-size:12px;color:var(--muted);line-height:1.55}.checks{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}.check{border:1px solid var(--line);border-radius:11px;padding:13px}.check b{display:block;color:var(--ulm);font-size:22px}.check span{font-size:10px;color:var(--muted)}.ok{color:#1d9b57!important}.warn{color:#a15c00!important}.danger{color:#b42318!important}.code{background:#101828;color:#d0d5dd;border-radius:10px;padding:13px;overflow:auto;font:12px monospace}.auth-row,.upload-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}.upload-grid{grid-template-columns:1.2fr 1fr 1fr}.field label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:900;color:var(--muted);margin-bottom:5px}.field input,.field select{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px;background:#fff}.btn{border:0;border-radius:9px;background:var(--ulm);color:#fff;padding:11px 14px;font-weight:900;cursor:pointer}.btn.secondary{background:var(--navy)}.btn.ghost{background:#fff;color:var(--ulm);border:1px solid var(--line)}.btn:disabled{opacity:.45;cursor:not-allowed}.statusline{margin-top:10px;font-size:12px;font-weight:800}.team-table{width:100%;border-collapse:collapse;margin-top:14px;font-size:12px}.team-table th{background:#f7f9fc;color:#475467;text-align:left;padding:9px;border-bottom:1px solid var(--line)}.team-table td{padding:9px;border-bottom:1px solid #edf0f3;vertical-align:middle}.team-cell{display:flex;align-items:center;gap:10px;min-width:230px}.team-logo{width:38px;height:38px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:9px;padding:3px}.team-name{font-weight:900;color:#101828;font-size:13px}.team-code{font-size:9px;color:var(--muted);font-weight:900;letter-spacing:.06em;margin-top:2px}.badge{display:inline-block;border-radius:999px;padding:4px 7px;font-size:9px;font-weight:900;text-transform:uppercase}.badge.scheme{background:#fff3d6;color:#7a5200}.badge.include{background:#e7f5ec;color:#176b40}.badge.exclude{background:#feeceb;color:#9b1c1c}.summary{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}.metric{border:1px solid var(--line);border-top:4px solid var(--gold);border-radius:12px;padding:12px}.metric b{font-size:24px;color:var(--ulm);display:block}.metric span{font-size:9px;color:var(--muted);text-transform:uppercase;font-weight:900}.progress{height:12px;background:#edf1f5;border-radius:999px;overflow:hidden;margin-top:12px}.progress>div{height:100%;width:0;background:var(--ulm);transition:.2s}.special{border-left:5px solid var(--gold);background:#fffaf0}.small{font-size:10px;color:var(--muted)}@media(max-width:900px){.checks,.summary{grid-template-columns:1fr 1fr}.auth-row,.upload-grid{grid-template-columns:1fr}.team-table{font-size:10px}}@media(max-width:600px){.checks,.summary{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -79,6 +79,22 @@ const safeInt=v=>{const n=parseInt(String(v??'').replace(/\.0$/,''),10);return N
 const safeDate=v=>{if(!v)return null;const s=String(v).slice(0,10);return /^\d{4}-\d{2}-\d{2}$/.test(s)?s:null};
 const cleanRaw=row=>{const o={};for(const [k,v] of Object.entries(row)){if(v!==''&&v!==null&&v!==undefined)o[k]=v}return o};
 const normId=v=>String(v??'').trim().replace(/\.0$/,'');
+const TEAM_META={
+ MSSO:{name:'Southern Miss',espn:2572},
+ ALTR:{name:'Troy',espn:2653},
+ NCAP:{name:'Appalachian State',espn:2026},
+ LATC:{name:'Louisiana Tech',espn:2348},
+ MSST:{name:'Mississippi State',espn:344},
+ ARST:{name:'Arkansas State',espn:2032},
+ LASW:{name:'Louisiana',espn:309},
+ FLAT:{name:'Florida Atlantic',espn:2226},
+ WVMA:{name:'Marshall',espn:276},
+ OKST:{name:'Oklahoma State',espn:197},
+ LASE:{name:'Southeastern Louisiana',espn:2545},
+ ALSO:{name:'South Alabama',espn:6}
+};
+const teamMeta=code=>TEAM_META[String(code||'').trim()]||{name:String(code||'Unknown Team'),espn:null};
+const teamLogo=code=>{const m=teamMeta(code);return m.espn?`https://a.espncdn.com/i/teamlogos/ncaa/500/${m.espn}.png`:''};
 
 async function check(){
  const items=[];
@@ -95,6 +111,8 @@ async function refreshAuth(){
  $('signIn').textContent=signedIn?'Sign Out':'Sign In';
  $('email').disabled=signedIn;$('password').disabled=signedIn;
  $('importBtn').disabled=!(signedIn&&parsedRows.length);
+ if(signedIn){$('importStatus').textContent=parsedRows.length?'Signed in · preview ready to import.':'Signed in · choose a PFF CSV to import.';$('importStatus').className='statusline ok'}
+ else {$('importStatus').textContent='Sign in before importing.';$('importStatus').className='statusline'}
 }
 $('signIn').onclick=async()=>{
  if(signedIn){await sb.auth.signOut();await refreshAuth();return}
@@ -130,7 +148,8 @@ function renderPreview(){
  $('previewPanel').style.display='block';$('importPanel').style.display='block';
  $('teamRows').innerHTML=teamSummary.map((x,i)=>{
   const scheme=side==='opponent_defense'&&x.team==='OKST';const shownGames=scheme?Math.min(4,x.games.length):x.games.length;const shownRows=scheme?x.games.slice(0,4).reduce((s,g)=>s+g.rows,0):x.rows;
-  return `<tr><td><input type="checkbox" data-team="${x.team}" ${x.include?'checked':''}></td><td><b>${x.team}</b></td><td>${shownGames}${scheme&&x.games.length>4?` of ${x.games.length}`:''}</td><td>${shownRows.toLocaleString()}${scheme&&shownRows!==x.rows?` <span class="small">(${(x.rows-shownRows).toLocaleString()} later plays excluded)</span>`:''}</td><td>${scheme?'<span class="badge scheme">UAB · Grantham · first 4 only</span>':'<span class="badge include">Standard import</span>'}</td></tr>`
+  const meta=teamMeta(x.team),logo=teamLogo(x.team);
+  return `<tr><td><input type="checkbox" data-team="${x.team}" ${x.include?'checked':''}></td><td><div class="team-cell">${logo?`<img class="team-logo" src="${logo}" alt="${meta.name} logo" onerror="this.style.display='none'">`:''}<div><div class="team-name">${meta.name}</div><div class="team-code">PFF ${x.team}</div></div></div></td><td>${shownGames}${scheme&&x.games.length>4?` of ${x.games.length}`:''}</td><td>${shownRows.toLocaleString()}${scheme&&shownRows!==x.rows?` <span class="small">(${(x.rows-shownRows).toLocaleString()} later plays excluded)</span>`:''}</td><td>${scheme?'<span class="badge scheme">UAB · Grantham · first 4 only</span>':'<span class="badge include">Standard import</span>'}</td></tr>`
  }).join('');
  document.querySelectorAll('[data-team]').forEach(cb=>cb.onchange=()=>{const x=teamSummary.find(t=>t.team===cb.dataset.team);x.include=cb.checked;renderStats()});
  renderStats();
