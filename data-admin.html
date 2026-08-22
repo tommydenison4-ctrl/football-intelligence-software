@@ -1,16 +1,167 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ULM Data Center</title><link rel="stylesheet" href="platform.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="platform.js"></script><style>
-.admin{max-width:1180px;margin:26px auto;padding:0 18px}.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}.panel h2{margin:0 0 8px}.muted{font-size:12px;color:var(--muted);line-height:1.5}.checks{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.check{border:1px solid var(--line);border-radius:11px;padding:13px}.check b{display:block;color:var(--ulm);font-size:22px}.check span{font-size:10px;color:var(--muted)}.code{background:#101828;color:#d0d5dd;border-radius:10px;padding:13px;overflow:auto;font:12px monospace}.ok{color:#1d9b57}.warn{color:#a15c00}@media(max-width:800px){.checks{grid-template-columns:1fr}}</style></head><body>
-<header class="fi-top"><div class="fi-top-inner"><img src="ulm_logo_official.png"><div><div class="fi-name">ULM Football Intelligence</div><div class="fi-sub">Supabase Data Center</div></div><div class="fi-spacer"></div><nav class="fi-nav"><a href="index.html">Home</a><a href="offense.html">Offense</a><a href="defense.html">Defense</a><a href="personnel.html">Personnel</a><a href="depth-chart.html">Depth Chart</a><a class="active" href="data-admin.html">Data</a></nav><div class="fi-opponent" id="opponentSwitch"></div></div></header>
-<main class="admin"><section class="panel"><div class="fi-ey" style="color:var(--ulm)">Source of Truth</div><h2>Supabase Database Status</h2><div class="muted">This page is intentionally read-only for staff. It checks whether the V2 tables are available and whether the selected opponent has centralized data.</div><div class="checks" id="checks"></div></section>
-<section class="panel"><h2>V2 data model</h2><div class="muted">Run <b>supabase_v2_schema.sql</b> once in the Supabase SQL Editor. Existing <code>projects</code> and <code>plays</code> stay in place; the new tables add opponents, player profiles, depth charts, reports and shared platform settings.</div></section>
-<section class="panel"><h2>Data rule</h2><div class="code">Frontend pages contain presentation + football logic only.
-Supabase contains opponent data, plays, players, depth charts, reports and settings.
-One opponent selection is shared across the platform.</div></section></main>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ULM Football Intelligence | Data Center</title>
+<link rel="stylesheet" href="platform.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="platform.js"></script>
+<style>
+.admin{max-width:1380px;margin:26px auto;padding:0 18px 50px}.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 8px 24px rgba(16,24,40,.05)}.panel h2{margin:0 0 8px}.muted{font-size:12px;color:var(--muted);line-height:1.55}.checks{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}.check{border:1px solid var(--line);border-radius:11px;padding:13px}.check b{display:block;color:var(--ulm);font-size:22px}.check span{font-size:10px;color:var(--muted)}.ok{color:#1d9b57!important}.warn{color:#a15c00!important}.danger{color:#b42318!important}.code{background:#101828;color:#d0d5dd;border-radius:10px;padding:13px;overflow:auto;font:12px monospace}.auth-row,.upload-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}.upload-grid{grid-template-columns:1.2fr 1fr 1fr}.field label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:900;color:var(--muted);margin-bottom:5px}.field input,.field select{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px;background:#fff}.btn{border:0;border-radius:9px;background:var(--ulm);color:#fff;padding:11px 14px;font-weight:900;cursor:pointer}.btn.secondary{background:var(--navy)}.btn.ghost{background:#fff;color:var(--ulm);border:1px solid var(--line)}.btn:disabled{opacity:.45;cursor:not-allowed}.statusline{margin-top:10px;font-size:12px;font-weight:800}.team-table{width:100%;border-collapse:collapse;margin-top:14px;font-size:12px}.team-table th{background:#f7f9fc;color:#475467;text-align:left;padding:9px;border-bottom:1px solid var(--line)}.team-table td{padding:9px;border-bottom:1px solid #edf0f3;vertical-align:middle}.badge{display:inline-block;border-radius:999px;padding:4px 7px;font-size:9px;font-weight:900;text-transform:uppercase}.badge.scheme{background:#fff3d6;color:#7a5200}.badge.include{background:#e7f5ec;color:#176b40}.badge.exclude{background:#feeceb;color:#9b1c1c}.summary{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}.metric{border:1px solid var(--line);border-top:4px solid var(--gold);border-radius:12px;padding:12px}.metric b{font-size:24px;color:var(--ulm);display:block}.metric span{font-size:9px;color:var(--muted);text-transform:uppercase;font-weight:900}.progress{height:12px;background:#edf1f5;border-radius:999px;overflow:hidden;margin-top:12px}.progress>div{height:100%;width:0;background:var(--ulm);transition:.2s}.special{border-left:5px solid var(--gold);background:#fffaf0}.small{font-size:10px;color:var(--muted)}@media(max-width:900px){.checks,.summary{grid-template-columns:1fr 1fr}.auth-row,.upload-grid{grid-template-columns:1fr}.team-table{font-size:10px}}@media(max-width:600px){.checks,.summary{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="fi-top"><div class="fi-top-inner"><img src="ulm_logo_official.png"><div><div class="fi-name">ULM Football Intelligence</div><div class="fi-sub">Supabase Data Center · PFF Master Import</div></div><div class="fi-spacer"></div><nav class="fi-nav"><a href="index.html">Home</a><a href="offense.html">Offense</a><a href="defense.html">Defense</a><a href="personnel.html">Personnel</a><a href="depth-chart.html">Depth Chart</a><a class="active" href="data-admin.html">Data</a></nav><div class="fi-opponent" id="opponentSwitch"></div></div></header>
+<main class="admin">
+<section class="panel">
+  <div class="fi-ey" style="color:var(--ulm)">Database</div><h2>Supabase Status</h2>
+  <div class="muted">The core platform stays readable to staff. PFF importing requires an authenticated Supabase account.</div>
+  <div class="checks" id="checks"></div>
+</section>
+
+<section class="panel" id="authPanel">
+  <div class="fi-ey" style="color:var(--ulm)">Admin Access</div><h2>Sign in to import</h2>
+  <div class="auth-row">
+    <div class="field"><label>Email</label><input id="email" type="email" placeholder="your Supabase login email"></div>
+    <div class="field"><label>Password</label><input id="password" type="password" placeholder="password"></div>
+    <button class="btn" id="signIn">Sign In</button>
+  </div>
+  <div class="statusline" id="authStatus">Not signed in.</div>
+</section>
+
+<section class="panel special">
+  <div class="fi-ey" style="color:#7a5200">UAB Scheme Rule</div>
+  <h2>Todd Grantham · Oklahoma State 2025</h2>
+  <div class="muted">For a defensive master export, the importer automatically recognizes <b>OKST</b>. Only Oklahoma State's first four defensive games are included, and they are tagged as a <b>UAB 2026 scheme reference</b>. Later Oklahoma State games are excluded. The actual team remains Oklahoma State in the raw data.</div>
+</section>
+
+<section class="panel">
+  <div class="fi-ey" style="color:var(--ulm)">Step 1</div><h2>Choose the master PFF export</h2>
+  <div class="upload-grid">
+    <div class="field"><label>CSV File</label><input id="file" type="file" accept=".csv,text/csv"></div>
+    <div class="field"><label>What is in this file?</label><select id="datasetSide"><option value="opponent_defense">Opponent Defenses → Offensive Intelligence</option><option value="opponent_offense">Opponent Offenses → Defensive Intelligence</option></select></div>
+    <div class="field"><label>Season</label><select id="season"><option>2025</option><option>2026</option></select></div>
+  </div>
+  <div class="statusline" id="parseStatus">Choose a CSV. Nothing will be uploaded until you click Import.</div>
+  <div class="summary" id="summary"></div>
+</section>
+
+<section class="panel" id="previewPanel" style="display:none">
+  <div class="fi-ey" style="color:var(--ulm)">Step 2</div><h2>Review detected teams and games</h2>
+  <div class="muted">Uncheck any team you do not want stored. Oklahoma State is handled automatically for the UAB scheme-reference rule when importing opponent defenses.</div>
+  <div style="overflow:auto"><table class="team-table"><thead><tr><th>Load</th><th>Team</th><th>Games</th><th>Plays</th><th>Rule</th></tr></thead><tbody id="teamRows"></tbody></table></div>
+</section>
+
+<section class="panel" id="importPanel" style="display:none">
+  <div class="fi-ey" style="color:var(--ulm)">Step 3</div><h2>Import selected data to Supabase</h2>
+  <div class="muted">Rows are stored once using PFF game ID + play ID. Re-uploading an updated master file will not create duplicate plays.</div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"><button class="btn secondary" id="importBtn" disabled>Import to Supabase</button><button class="btn ghost" id="clearBtn">Clear Preview</button></div>
+  <div class="progress"><div id="progressBar"></div></div>
+  <div class="statusline" id="importStatus">Sign in before importing.</div>
+</section>
+
+<section class="panel">
+  <h2>Importer data model</h2>
+  <div class="code">One large PFF CSV → detect team → detect game → deduplicate play → store raw row in Supabase
+
+Opponent Defenses → Offensive Intelligence
+Opponent Offenses  → Defensive Intelligence
+OKST first 4 defensive games → UAB / Todd Grantham scheme reference</div>
+</section>
+</main>
 <script>
 const sb=supabase.createClient(ULM_PLATFORM.supabaseUrl,ULM_PLATFORM.supabaseKey);
-async function check(team){
- const items=[]; for(const table of ['teams','projects','plays','players','depth_chart_entries','reports']){try{const {count,error}=await sb.from(table).select('*',{count:'exact',head:true});items.push({table,count,error})}catch(e){items.push({table,error:e})}}
- document.getElementById('checks').innerHTML=items.map(x=>`<div class="check"><b class="${x.error?'warn':'ok'}">${x.error?'SETUP':(x.count??0).toLocaleString()}</b><span>${x.table}${x.error?' · table/policy not ready':' rows'}</span></div>`).join('');
+let parsedRows=[], teamSummary=[], signedIn=false;
+const $=id=>document.getElementById(id);
+const safeInt=v=>{const n=parseInt(String(v??'').replace(/\.0$/,''),10);return Number.isFinite(n)?n:null};
+const safeDate=v=>{if(!v)return null;const s=String(v).slice(0,10);return /^\d{4}-\d{2}-\d{2}$/.test(s)?s:null};
+const cleanRaw=row=>{const o={};for(const [k,v] of Object.entries(row)){if(v!==''&&v!==null&&v!==undefined)o[k]=v}return o};
+const normId=v=>String(v??'').trim().replace(/\.0$/,'');
+
+async function check(){
+ const items=[];
+ for(const table of ['teams','projects','plays','players','pff_import_batches','pff_raw_plays']){
+  try{const {count,error}=await sb.from(table).select('*',{count:'exact',head:true});items.push({table,count,error})}catch(e){items.push({table,error:e})}
+ }
+ $('checks').innerHTML=items.map(x=>`<div class="check"><b class="${x.error?'warn':'ok'}">${x.error?'SETUP':(x.count??0).toLocaleString()}</b><span>${x.table}${x.error?' · run importer SQL':' rows'}</span></div>`).join('');
 }
-platformBindOpponent(document.getElementById('opponentSwitch'),check).then(({current})=>check(current));
-</script></body></html>
+
+async function refreshAuth(){
+ const {data:{session}}=await sb.auth.getSession(); signedIn=!!session;
+ $('authStatus').textContent=signedIn?`Signed in as ${session.user.email}`:'Not signed in.';
+ $('authStatus').className='statusline '+(signedIn?'ok':'');
+ $('signIn').textContent=signedIn?'Sign Out':'Sign In';
+ $('email').disabled=signedIn;$('password').disabled=signedIn;
+ $('importBtn').disabled=!(signedIn&&parsedRows.length);
+}
+$('signIn').onclick=async()=>{
+ if(signedIn){await sb.auth.signOut();await refreshAuth();return}
+ $('authStatus').textContent='Signing in...';
+ const {error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});
+ if(error){$('authStatus').textContent=error.message;$('authStatus').className='statusline danger';return}
+ $('password').value='';await refreshAuth();
+};
+
+function gameKey(r){return normId(r.pff_GAMEID)||`${safeDate(r.pff_GAMEDATE)||''}:${r.pff_OFFTEAM||''}:${r.pff_DEFTEAM||''}`}
+function analyze(rows){
+ const side=$('datasetSide').value, focusField=side==='opponent_defense'?'pff_DEFTEAM':'pff_OFFTEAM';
+ const map=new Map();
+ for(const r of rows){const team=String(r[focusField]||'UNKNOWN').trim()||'UNKNOWN';const g=gameKey(r);if(!map.has(team))map.set(team,{team,rows:0,games:new Map(),include:true});const x=map.get(team);x.rows++;if(!x.games.has(g))x.games.set(g,{id:g,date:safeDate(r.pff_GAMEDATE),week:safeInt(r.pff_WEEK),rows:0});x.games.get(g).rows++}
+ teamSummary=[...map.values()].map(x=>({...x,games:[...x.games.values()].sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999')||String(a.id).localeCompare(String(b.id)))})).sort((a,b)=>b.rows-a.rows);
+ renderPreview();
+}
+function selectedRows(){
+ const side=$('datasetSide').value, focusField=side==='opponent_defense'?'pff_DEFTEAM':'pff_OFFTEAM';
+ const included=new Set(teamSummary.filter(x=>x.include).map(x=>x.team));
+ let okstFirst4=new Set();
+ if(side==='opponent_defense'){
+  const ok=teamSummary.find(x=>x.team==='OKST'); if(ok)okstFirst4=new Set(ok.games.slice(0,4).map(g=>g.id));
+ }
+ return parsedRows.filter(r=>{
+  const t=String(r[focusField]||'UNKNOWN').trim()||'UNKNOWN';if(!included.has(t))return false;
+  if(side==='opponent_defense'&&t==='OKST')return okstFirst4.has(gameKey(r));
+  return true;
+ });
+}
+function renderPreview(){
+ const side=$('datasetSide').value;
+ $('previewPanel').style.display='block';$('importPanel').style.display='block';
+ $('teamRows').innerHTML=teamSummary.map((x,i)=>{
+  const scheme=side==='opponent_defense'&&x.team==='OKST';const shownGames=scheme?Math.min(4,x.games.length):x.games.length;const shownRows=scheme?x.games.slice(0,4).reduce((s,g)=>s+g.rows,0):x.rows;
+  return `<tr><td><input type="checkbox" data-team="${x.team}" ${x.include?'checked':''}></td><td><b>${x.team}</b></td><td>${shownGames}${scheme&&x.games.length>4?` of ${x.games.length}`:''}</td><td>${shownRows.toLocaleString()}${scheme&&shownRows!==x.rows?` <span class="small">(${(x.rows-shownRows).toLocaleString()} later plays excluded)</span>`:''}</td><td>${scheme?'<span class="badge scheme">UAB · Grantham · first 4 only</span>':'<span class="badge include">Standard import</span>'}</td></tr>`
+ }).join('');
+ document.querySelectorAll('[data-team]').forEach(cb=>cb.onchange=()=>{const x=teamSummary.find(t=>t.team===cb.dataset.team);x.include=cb.checked;renderStats()});
+ renderStats();
+}
+function renderStats(){
+ const selected=selectedRows(), games=new Set(selected.map(gameKey)), teams=new Set(selected.map(r=>String(r[$('datasetSide').value==='opponent_defense'?'pff_DEFTEAM':'pff_OFFTEAM']||'UNKNOWN')));
+ $('summary').innerHTML=`<div class="metric"><b>${parsedRows.length.toLocaleString()}</b><span>CSV Rows</span></div><div class="metric"><b>${teams.size}</b><span>Selected Teams</span></div><div class="metric"><b>${games.size}</b><span>Selected Games</span></div><div class="metric"><b>${selected.length.toLocaleString()}</b><span>Rows to Import</span></div><div class="metric"><b>${($('datasetSide').value==='opponent_defense'&&teamSummary.some(x=>x.team==='OKST'))?'4':'—'}</b><span>OKST Scheme Games</span></div>`;
+ $('importBtn').disabled=!(signedIn&&selected.length);
+}
+
+$('file').addEventListener('change',()=>{const file=$('file').files[0];if(!file)return;$('parseStatus').textContent=`Reading ${file.name}...`;Papa.parse(file,{header:true,skipEmptyLines:true,dynamicTyping:false,complete:r=>{parsedRows=r.data||[];const fields=r.meta?.fields||[];const need=['pff_GAMEID','pff_PLAYID','pff_GAMEDATE','pff_GAMESEASON','pff_WEEK','pff_OFFTEAM','pff_DEFTEAM'];const missing=need.filter(x=>!fields.includes(x));if(missing.length){$('parseStatus').textContent=`Missing required PFF fields: ${missing.join(', ')}`;$('parseStatus').className='statusline danger';parsedRows=[];return}$('parseStatus').textContent=`${file.name}: ${parsedRows.length.toLocaleString()} rows · ${fields.length} columns detected.`;$('parseStatus').className='statusline ok';analyze(parsedRows)}})});
+$('datasetSide').onchange=()=>{if(parsedRows.length)analyze(parsedRows)};
+$('clearBtn').onclick=()=>{parsedRows=[];teamSummary=[];$('file').value='';$('previewPanel').style.display='none';$('importPanel').style.display='none';$('summary').innerHTML='';$('parseStatus').textContent='Choose a CSV. Nothing will be uploaded until you click Import.'};
+
+function makeDbRow(r,batchId,okstFirst4){
+ const side=$('datasetSide').value, focusField=side==='opponent_defense'?'pff_DEFTEAM':'pff_OFFTEAM';const game=gameKey(r),play=normId(r.pff_PLAYID);const focus=String(r[focusField]||'UNKNOWN').trim()||'UNKNOWN';const scheme=side==='opponent_defense'&&focus==='OKST'&&okstFirst4.has(game);
+ return {batch_id:batchId,dataset_side:side,source_key:`${game}:${play||normId(r.pff_SORTORDER)||Math.random().toString(36).slice(2)}`,pff_game_id:normId(r.pff_GAMEID)||null,pff_play_id:play||null,game_date:safeDate(r.pff_GAMEDATE),season:safeInt(r.pff_GAMESEASON)||safeInt($('season').value),week:safeInt(r.pff_WEEK),offense_code:String(r.pff_OFFTEAM||'').trim()||null,defense_code:String(r.pff_DEFTEAM||'').trim()||null,focus_team_code:focus,is_scheme_reference:scheme,scheme_reference_for:scheme?'uab':null,scheme_coach:scheme?'Todd Grantham':null,raw_data:cleanRaw(r),updated_at:new Date().toISOString()};
+}
+$('importBtn').onclick=async()=>{
+ if(!signedIn)return;const rows=selectedRows();if(!rows.length)return;
+ $('importBtn').disabled=true;$('importStatus').textContent='Creating import batch...';$('progressBar').style.width='1%';
+ const summaryObj=Object.fromEntries(teamSummary.map(x=>[x.team,{games:x.games.length,rows:x.rows,selected:x.include}]));
+ const {data:batch,error:be}=await sb.from('pff_import_batches').insert({filename:$('file').files[0]?.name||'PFF export.csv',dataset_side:$('datasetSide').value,season:safeInt($('season').value),status:'importing',rows_seen:parsedRows.length,rows_selected:rows.length,team_summary:summaryObj}).select('id').single();
+ if(be){$('importStatus').textContent=`Batch error: ${be.message}`;$('importStatus').className='statusline danger';$('importBtn').disabled=false;return}
+ let okstFirst4=new Set();if($('datasetSide').value==='opponent_defense'){const ok=teamSummary.find(x=>x.team==='OKST');if(ok)okstFirst4=new Set(ok.games.slice(0,4).map(g=>g.id));}
+ let inserted=0,failed=0;const chunkSize=150;
+ for(let i=0;i<rows.length;i+=chunkSize){const chunk=rows.slice(i,i+chunkSize).map(r=>makeDbRow(r,batch.id,okstFirst4));const {data,error}=await sb.from('pff_raw_plays').upsert(chunk,{onConflict:'dataset_side,source_key',ignoreDuplicates:true}).select('id');if(error){failed+=chunk.length;console.error(error)}else inserted+=(data||[]).length;const done=Math.min(i+chunkSize,rows.length);$('progressBar').style.width=`${Math.round(done/rows.length*100)}%`;$('importStatus').textContent=`Uploading ${done.toLocaleString()} / ${rows.length.toLocaleString()} plays...`;}
+ const dup=Math.max(0,rows.length-inserted-failed);await sb.from('pff_import_batches').update({status:failed?'completed_with_errors':'completed',rows_inserted:inserted,duplicates_skipped:dup,notes:failed?`${failed} rows were in failed chunks`:null}).eq('id',batch.id);
+ $('importStatus').textContent=failed?`Finished with errors: ${inserted.toLocaleString()} inserted, ${dup.toLocaleString()} duplicates, ${failed.toLocaleString()} failed.`:`Import complete: ${inserted.toLocaleString()} new plays · ${dup.toLocaleString()} duplicates skipped.`;$('importStatus').className='statusline '+(failed?'warn':'ok');$('importBtn').disabled=false;await check();
+};
+
+platformBindOpponent($('opponentSwitch')).then(()=>{});check();refreshAuth();
+</script>
+</body></html>
