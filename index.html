@@ -1,165 +1,21 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ULM Football Intelligence Platform</title>
-<style>
-:root{
- --maroon:#6b0016;--maroon2:#2c0008;--navy:#0b1f3a;--blue:#073b68;
- --gold:#b9975b;--cream:#f5efe5;--white:#fff;--line:rgba(255,255,255,.18)
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ULM Football Intelligence</title>
+<link rel="stylesheet" href="platform.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="platform.js"></script></head><body>
+<header class="fi-top"><div class="fi-top-inner"><img src="ulm_logo_official.png" alt="ULM"><div><div class="fi-name">ULM Football Intelligence</div><div class="fi-sub">One data system · two football workspaces</div></div><div class="fi-spacer"></div><nav class="fi-nav"><a class="active" href="index.html">Home</a><a href="offense.html">Offense</a><a href="defense.html">Defense</a><a href="personnel.html">Personnel</a><a href="depth-chart.html">Depth Chart</a></nav><div class="fi-opponent" id="opponentSwitch"></div></div></header>
+<section class="fi-hero"><div class="fi-wrap"><div class="fi-brand"><img src="ulm_logo_official.png" alt="ULM"><div><div class="fi-ey">ULM Warhawks Football</div><div class="fi-title">Football Intelligence</div><div class="fi-desc">Analytics · Scouting · Personnel · Weekly Game Planning</div></div></div>
+<div class="fi-week"><div><div class="fi-ey">Current Opponent</div><strong id="currentOpponent">Loading...</strong></div><div class="fi-badge"><span class="fi-dot"></span>Supabase Connected Architecture</div></div>
+<div class="fi-data"><div><strong id="projectCount">—</strong><span>Published Datasets</span></div><div><strong id="playCount">—</strong><span>Plays Available</span></div><div><strong id="playerCount">—</strong><span>Player Profiles</span></div><div><strong>2</strong><span>Primary Workspaces</span></div></div>
+<div class="fi-branches"><a class="fi-branch offense" href="offense.html"><div class="fi-ey">Offensive Staff</div><h2>Offensive Intelligence</h2><p>Opponent defense, Advantage Theory, formations, personnel, field zones, routes, pressure, situations, first down, explosive and position-specific intelligence.</p><span class="fi-action">Enter Offensive Intelligence →</span></a><a class="fi-branch defense" href="defense.html"><div class="fi-ey">Defensive Staff</div><h2>Defensive Intelligence</h2><p>Opponent offense, personnel, formations, run and pass concepts, tendencies, coverage stress, situations and weekly defensive game-planning intelligence.</p><span class="fi-action">Enter Defensive Intelligence →</span></a></div></div></section>
+<section class="fi-shared"><div class="fi-wrap"><div class="fi-section-title">Shared Football Intelligence</div><div class="fi-section-sub">Shared information sits outside either side of the ball and follows the selected opponent.</div><div class="fi-tools"><a class="fi-tool" href="personnel.html"><span>Personnel Intelligence</span><h3>Player Portal</h3><p>Roster profiles, player production, game logs, traits and scouting information.</p></a><a class="fi-tool" href="depth-chart.html"><span>Weekly Operations</span><h3>Depth Chart</h3><p>Opponent offense, defense and special teams depth with role and personnel context.</p></a><a class="fi-tool" href="data-admin.html"><span>Data Operations</span><h3>Supabase Data Center</h3><p>Verify the database, inspect published datasets and prepare new weekly opponent data.</p></a></div></div></section><div class="fi-footer">ULM Football Intelligence · Staff Use</div>
+<script>
+let homeSb=null;try{homeSb=supabase.createClient(ULM_PLATFORM.supabaseUrl,ULM_PLATFORM.supabaseKey)}catch{}
+async function stats(team){
+ document.getElementById('currentOpponent').textContent=team.name;
+ if(!homeSb)return;
+ try{
+  let q=homeSb.from('projects').select('id',{count:'exact',head:true}).eq('published',true); if(team.name) q=q.eq('subject_team',team.name); const {count:pc}=await q; document.getElementById('projectCount').textContent=pc??'—';
+  const {data:projects}=await homeSb.from('projects').select('id').eq('published',true).eq('subject_team',team.name); if(projects?.length){const ids=projects.map(x=>x.id);const {count:plc}=await homeSb.from('plays').select('id',{count:'exact',head:true}).in('project_id',ids);document.getElementById('playCount').textContent=(plc??0).toLocaleString()}else document.getElementById('playCount').textContent='0';
+  const {count:players}=await homeSb.from('players').select('id',{count:'exact',head:true}).eq('team_name',team.name);document.getElementById('playerCount').textContent=players??'—';
+ }catch{}
 }
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif}
-body{
- color:#fff;
- background:
-  radial-gradient(circle at 82% 10%,rgba(185,151,91,.24),transparent 28%),
-  linear-gradient(140deg,#260006 0%,#6b0016 52%,#32000a 100%);
-}
-.top-nav{
- position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid #d9dee7;
- display:flex;gap:8px;padding:10px 24px;overflow-x:auto;-webkit-overflow-scrolling:touch
-}
-.top-nav a{
- min-height:42px;display:inline-flex;align-items:center;padding:9px 12px;
- border:1px solid #d9dee7;border-radius:9px;color:#0b1f3a;text-decoration:none;
- font-size:13px;font-weight:900;white-space:nowrap;background:#fff
-}
-.top-nav a.active{background:#0b1f3a;color:#fff;border-color:#0b1f3a}
-.wrap{max-width:1280px;margin:auto;padding:34px 22px 42px}
-.brand{display:flex;align-items:center;gap:18px}
-.logo{width:94px;height:94px;object-fit:contain}
-.ey{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#e3bc69;font-weight:900}
-h1{font-size:clamp(38px,5vw,62px);line-height:1.02;margin:4px 0 8px}
-.sub{color:#f1dfe3;font-size:15px}
-.opponent{
- margin-top:32px;padding:22px 24px;border:1px solid var(--line);border-radius:20px;
- background:rgba(255,255,255,.08);display:flex;justify-content:space-between;gap:18px;align-items:center
-}
-.opponent-name{font-size:32px;margin-top:5px}
-.status{background:#fff;color:#172033;border-radius:999px;padding:8px 12px;font-size:12px;white-space:nowrap}
-.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#1d9b57;margin-right:7px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
-.stat{border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.08);padding:13px;text-align:center}
-.stat strong{display:block;font-size:24px}.stat span{font-size:10px;color:#f1dfe3}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px}
-.card{
- min-height:275px;border-radius:20px;padding:27px;position:relative;text-decoration:none;color:#fff;
- border:1px solid rgba(255,255,255,.18);box-shadow:0 18px 42px rgba(0,0,0,.28);transition:.2s
-}
-.card:hover{transform:translateY(-4px);box-shadow:0 26px 56px rgba(0,0,0,.35)}
-.card.offense{background:linear-gradient(145deg,#073b68,#021a30)}
-.card.defense{background:linear-gradient(145deg,#951620,#3d0008)}
-.card.players{background:linear-gradient(145deg,#4c5a2b,#202a13)}
-.card.depth{background:linear-gradient(145deg,#7a5b28,#3f2a0b)}
-.card h2{font-size:39px;margin:10px 0}
-.card p{max-width:520px;line-height:1.5;color:#edf2f7}
-.action{
- position:absolute;left:27px;bottom:24px;background:#fff;color:#111;padding:10px 13px;border-radius:8px;
- font-size:13px;font-weight:800
-}
-.footer{margin-top:24px;text-align:center;color:#e6cfd5;font-size:11px}
-@media(max-width:850px){
- .top-nav{padding:9px 12px}
- .wrap{padding:24px 14px 32px}
- .brand{align-items:flex-start;gap:12px}.logo{width:66px;height:66px}
- h1{font-size:34px}.sub{font-size:12px}
- .opponent{align-items:flex-start;flex-direction:column;padding:17px}
- .opponent-name{font-size:27px}.stats{grid-template-columns:repeat(2,1fr)}
- .grid{grid-template-columns:1fr}.card{min-height:235px;padding:22px}.card h2{font-size:32px}
- .action{left:22px;bottom:20px}
-}
-
-.uab-workspace{
- margin-top:22px;padding:22px;border:1px solid rgba(255,255,255,.22);border-radius:20px;
- background:linear-gradient(145deg,rgba(11,31,58,.95),rgba(4,18,34,.95));
- box-shadow:0 18px 42px rgba(0,0,0,.28)
-}
-.uab-workspace-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
-.uab-workspace h2{font-size:34px;margin:6px 0 8px}
-.uab-workspace p{margin:0;color:#e8eef5;line-height:1.5;max-width:800px}
-.uab-links{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
-.uab-link{
- display:block;text-decoration:none;color:#fff;border:1px solid rgba(255,255,255,.18);
- border-radius:12px;padding:14px;background:rgba(255,255,255,.08);font-weight:900
-}
-.uab-link span{display:block;font-size:10px;color:#e3bc69;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
-.uab-link:hover{background:rgba(255,255,255,.14)}
-@media(max-width:850px){.uab-links{grid-template-columns:1fr}}
-
-</style>
-</head>
-<body>
-<nav class="top-nav" aria-label="Platform modules">
-<a class="active" href="index.html">Home</a>
-<a href="offense.html">Offensive Analytics</a>
-<a href="defense.html">Defensive Analytics</a>
-<a href="personnel.html">Player Portal</a>
-<a href="depth-chart.html">Depth Chart</a>
-</nav>
-<main class="wrap">
-<section class="brand">
-<img class="logo" src="ulm_logo_official.png" alt="ULM logo">
-<div><div class="ey">ULM Warhawks Football</div><h1>Football Intelligence Platform</h1><div class="sub">Analytics · Scouting · Personnel · Weekly Game Planning</div></div>
-</section>
-
-<section class="opponent">
-<div><div class="ey">2026 Opponent Workspace</div><div class="opponent-name">Florida Atlantic</div></div>
-<div class="status"><span class="dot"></span>Open Staff Access</div>
-</section>
-
-<section class="stats">
-<div class="stat"><strong>513</strong><span>Charted Plays</span></div>
-<div class="stat"><strong>36</strong><span>Player Profiles</span></div>
-<div class="stat"><strong>12</strong><span>Games Indexed</span></div>
-<div class="stat"><strong>4</strong><span>Core Modules</span></div>
-</section>
-
-<section class="grid">
-<a class="card offense" href="offense.html">
-<div class="ey">Team Analytics</div><h2>Offensive Analytics</h2>
-<p>Advantage states, formations, personnel, field zones, routes, situations, first downs and projected totals.</p>
-<span class="action">Open Offensive Analytics →</span>
-</a>
-
-<a class="card defense" href="defense.html">
-<div class="ey">Team Analytics</div><h2>Defensive Analytics</h2>
-<p>Florida Atlantic offensive scouting for the defensive staff: personnel, formations, routes, run concepts, pressure response, coverage response and situations.</p>
-<span class="action">Open Defensive Analytics →</span>
-</a>
-
-<a class="card players" href="personnel.html">
-<div class="ey">Personnel Intelligence</div><h2>Player Portal</h2>
-<p>Florida Atlantic offensive and defensive player profiles, routes, coverage splits, game logs, comparisons and coach notes.</p>
-<span class="action">Open Player Portal →</span>
-</a>
-
-<a class="card depth" href="depth-chart.html">
-<div class="ey">Weekly Operations</div><h2>Depth Chart</h2>
-<p>Projected Florida Atlantic offense, defense and special teams depth chart, plus the top incoming players expected to hold major roles.</p>
-<span class="action">Open FAU Depth Chart →</span>
-</a>
-</section>
-
-
-<section class="uab-workspace">
-  <div class="uab-workspace-head">
-    <div>
-      <div class="ey">Additional Opponent Workspace</div>
-      <h2>UAB · Todd Grantham Scheme</h2>
-      <p>Oklahoma State defensive scheme data for the offensive staff, plus UAB player and projected depth-chart workspaces.</p>
-    </div>
-    <div class="status"><span class="dot"></span>Available</div>
-  </div>
-  <div class="uab-links">
-    <a class="uab-link" href="uab-defense.html"><span>Offensive Staff</span>Open UAB Defense in Offensive Analytics →</a>
-    <a class="uab-link" href="uab-personnel.html"><span>Personnel</span>Open UAB Player Portal →</a>
-    <a class="uab-link" href="uab-depth-chart.html"><span>Weekly Operations</span>Open UAB Depth Chart →</a>
-  </div>
-</section>
-
-<div class="footer">ULM Football Intelligence Platform · Open Staff Access</div>
-</main>
-</body>
-</html>
+platformBindOpponent(document.getElementById('opponentSwitch'),stats).then(({current})=>stats(current));
+</script></body></html>

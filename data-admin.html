@@ -1,0 +1,16 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ULM Data Center</title><link rel="stylesheet" href="platform.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="platform.js"></script><style>
+.admin{max-width:1180px;margin:26px auto;padding:0 18px}.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}.panel h2{margin:0 0 8px}.muted{font-size:12px;color:var(--muted);line-height:1.5}.checks{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.check{border:1px solid var(--line);border-radius:11px;padding:13px}.check b{display:block;color:var(--ulm);font-size:22px}.check span{font-size:10px;color:var(--muted)}.code{background:#101828;color:#d0d5dd;border-radius:10px;padding:13px;overflow:auto;font:12px monospace}.ok{color:#1d9b57}.warn{color:#a15c00}@media(max-width:800px){.checks{grid-template-columns:1fr}}</style></head><body>
+<header class="fi-top"><div class="fi-top-inner"><img src="ulm_logo_official.png"><div><div class="fi-name">ULM Football Intelligence</div><div class="fi-sub">Supabase Data Center</div></div><div class="fi-spacer"></div><nav class="fi-nav"><a href="index.html">Home</a><a href="offense.html">Offense</a><a href="defense.html">Defense</a><a href="personnel.html">Personnel</a><a href="depth-chart.html">Depth Chart</a><a class="active" href="data-admin.html">Data</a></nav><div class="fi-opponent" id="opponentSwitch"></div></div></header>
+<main class="admin"><section class="panel"><div class="fi-ey" style="color:var(--ulm)">Source of Truth</div><h2>Supabase Database Status</h2><div class="muted">This page is intentionally read-only for staff. It checks whether the V2 tables are available and whether the selected opponent has centralized data.</div><div class="checks" id="checks"></div></section>
+<section class="panel"><h2>V2 data model</h2><div class="muted">Run <b>supabase_v2_schema.sql</b> once in the Supabase SQL Editor. Existing <code>projects</code> and <code>plays</code> stay in place; the new tables add opponents, player profiles, depth charts, reports and shared platform settings.</div></section>
+<section class="panel"><h2>Data rule</h2><div class="code">Frontend pages contain presentation + football logic only.
+Supabase contains opponent data, plays, players, depth charts, reports and settings.
+One opponent selection is shared across the platform.</div></section></main>
+<script>
+const sb=supabase.createClient(ULM_PLATFORM.supabaseUrl,ULM_PLATFORM.supabaseKey);
+async function check(team){
+ const items=[]; for(const table of ['teams','projects','plays','players','depth_chart_entries','reports']){try{const {count,error}=await sb.from(table).select('*',{count:'exact',head:true});items.push({table,count,error})}catch(e){items.push({table,error:e})}}
+ document.getElementById('checks').innerHTML=items.map(x=>`<div class="check"><b class="${x.error?'warn':'ok'}">${x.error?'SETUP':(x.count??0).toLocaleString()}</b><span>${x.table}${x.error?' · table/policy not ready':' rows'}</span></div>`).join('');
+}
+platformBindOpponent(document.getElementById('opponentSwitch'),check).then(({current})=>check(current));
+</script></body></html>
