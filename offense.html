@@ -98,27 +98,28 @@ button{background:var(--m);color:white;border:0;border-radius:8px;padding:10px 1
 
 </head>
 <body>
-<div id="fi-v2-strip" style="background:#0b1f3a;color:#fff;padding:8px 14px;font:700 12px Arial;display:flex;gap:10px;align-items:center;flex-wrap:wrap;position:relative;z-index:9999"><a href="index.html" style="color:#fff;text-decoration:none">← Football Intelligence</a><span style="opacity:.45">|</span><span>Offensive Intelligence</span><span style="margin-left:auto;color:#d9b56a">V2</span></div>
-
 <header>
 <div class="brand-wrap">
 <img class="brand-logo" src="ulm_logo_official.png" alt="ULM logo">
-<div><div class="ey">ULM Football</div><h1>Offensive Intelligence</h1><div>Advantage states · formations · field zones · situations</div></div>
+<div><div class="ey">ULM Football</div><h1>Offensive Analytics</h1><div>Advantage states · formations · field zones · situations</div></div>
 </div>
 
 </header>
 
 <nav class="workspace-nav" aria-label="Platform modules">
   <a href="index.html">Home</a>
-  <a class="active" href="offense.html">Offensive Intelligence</a>
-  <a href="defense.html">Defensive Intelligence</a>
-  <a href="personnel.html">Personnel</a>
+  <a class="active" href="offense.html">Offensive Analytics</a>
+  <a href="defense.html">Defensive Analytics</a>
+  <a href="personnel.html">Player Portal</a>
   <a href="depth-chart.html">Depth Chart</a>
-  <a href="data-admin.html">Data</a>
-</nav>
-<div class="opponent-workspace-switch" id="opponentHost"></div>
-<div class="public-notice" id="publicNotice">Open staff access · loading selected opponent defense from Supabase</div>
-<script src="platform.js"></script>
+</nav><div class="opponent-workspace-switch">
+<label>Opponent Defense Workspace</label>
+<select onchange="if(this.value) location.href=this.value">
+<option value="offense.html" selected>Florida Atlantic Defense</option>
+<option value="uab-defense.html">UAB Defense — Oklahoma State / Todd Grantham</option>
+</select>
+</div>
+<div class="public-notice">Open staff access · Florida Atlantic loads automatically</div>
 
 
 <div id="status" class="status"><span>Loading...</span></div>
@@ -321,98 +322,63 @@ function attachSelectHandlers(){
 }
 
 const DEFAULT_PUBLIC_SHARE_TOKEN="5f748e94-9681-4f12-8bab-75f5ca5ada6b";
-const PFF_DEFENSE_CODE_BY_SLUG={
- "mississippi-state":"MSST",
- "florida-atlantic":"FLAT",
- "south-alabama":"ALSO",
- "louisiana-tech":"LATC",
- "troy":"ALTR",
- "southern-miss":"MSSO",
- "arkansas-state":"ARST",
- "louisiana":"LASW",
- "app-state":"NCAP",
- "marshall":"WVMA",
- "southeastern":"LASE"
-};
-function rawVal(r,...keys){for(const k of keys){if(r&&r[k]!==undefined&&r[k]!==null&&String(r[k]).trim()!=="")return r[k]}return null}
-function pffBool(v){return v===true||v===1||String(v||"").trim().toLowerCase()==="true"||String(v||"").trim()==="1"||String(v||"").trim().toUpperCase()==="Y"}
-function pffToPlay(dbrow){
- const r=dbrow.raw_data||{};
- const passResult=String(rawVal(r,"pff_PASSRESULT")||"").toLowerCase();
- const play={
-  game_id:dbrow.pff_game_id||rawVal(r,"pff_GAMEID"),play_id:dbrow.pff_play_id||rawVal(r,"pff_PLAYID"),
-  game_date:dbrow.game_date||rawVal(r,"pff_GAMEDATE"),season:dbrow.season||rawVal(r,"pff_GAMESEASON"),week:dbrow.week||rawVal(r,"pff_WEEK"),
-  offense:school(dbrow.offense_code||rawVal(r,"pff_OFFTEAM")),defense:school(dbrow.defense_code||rawVal(r,"pff_DEFTEAM")),
-  down:num(rawVal(r,"pff_DOWN")),distance:num(rawVal(r,"pff_DISTANCE")),yards_to_goal:num(rawVal(r,"pff_YARDS_TO_GOAL_LINE","pff_YARDSTOGOAL")),
-  gain:num(rawVal(r,"pff_GAINLOSSNET","pff_GAINLOSS")),run_pass:String(rawVal(r,"pff_RUNPASS")||"").trim().toUpperCase(),
-  formation:cleanDisplay(rawVal(r,"pff_OFFENSIVE_FORMATION_NAME","pff_OFFFORMATION","pff_STARTING_OFFENSIVE_FORMATION_NAME","pff_OFFFORMATIONGROUP")),
-  personnel:cleanDisplay(rawVal(r,"pff_OFF_PERSONNEL_GROUP","pff_OFFPERSONNELBASIC","pff_OFFPERSONNEL")),
-  route:cleanDisplay(rawVal(r,"pff_ROUTE_THROWN","pff_PASSPATTERN","pff_PASSROUTETARGET")),
-  pass_coverage:cleanDisplay(rawVal(r,"pff_PASS_COVERAGE_BASIC","pff_PASSCOVERAGE","pff_PASSCOVERAGE1")),
-  pass_rushers:rawVal(r,"pff_PASSRUSHPLAYERS","pff_QBPRESSURE"),
-  time_to_throw:num(rawVal(r,"pff_TIMETOTHROW")),
-  completion:pffBool(rawVal(r,"pff_COMPLETE","pff_COMPLETION"))||/complete/.test(passResult)&&!/incomplete/.test(passResult),
-  incompletion:pffBool(rawVal(r,"pff_INCOMPLETE","pff_INCOMPLETION"))||/incomplete/.test(passResult),
-  interception:pffBool(rawVal(r,"pff_INTERCEPTION"))||/intercept/.test(passResult),
-  touchdown:pffBool(rawVal(r,"pff_TOUCHDOWN")),sack:pffBool(rawVal(r,"pff_SACK")),scramble:pffBool(rawVal(r,"pff_SCRAMBLE")),
-  turnover:pffBool(rawVal(r,"pff_TURNOVER")),fumble_lost:pffBool(rawVal(r,"pff_FUMBLELOST")),
-  play_action:pffBool(rawVal(r,"pff_PLAYACTION")),screen:pffBool(rawVal(r,"pff_SCREEN")),
-  drive_id:rawVal(r,"pff_DRIVEID","pff_DRIVE"),play_in_drive:num(rawVal(r,"pff_DRIVEPLAY")),
-  play_description:rawVal(r,"pff_PLAYDESCRIPTION","pff_DESCRIPTION","pff_PLAYTEXT")||"",
-  source_team_code:dbrow.focus_team_code,is_scheme_reference:dbrow.is_scheme_reference,scheme_reference_for:dbrow.scheme_reference_for
- };
- // Preserve any ULM custom/charting fields if they are included in a PFF export.
- const custom={num_advantage:["num_advantage","pff_NUM_ADVANTAGE"],fz_advantage:["fz_advantage","pff_FZ_ADVANTAGE"],fz_attacked:["fz_attacked","pff_FZ_ATTACKED"]};
- for(const [k,ks] of Object.entries(custom)){const v=rawVal(r,...ks);if(v!==null)play[k]=k==="num_advantage"?pffBool(v):v}
- return play;
-}
-async function fetchAllRaw(builder){
- let out=[],from=0,step=1000;
- while(true){const {data,error}=await builder.range(from,from+step-1);if(error)throw error;out.push(...(data||[]));if(!data||data.length<step)break;from+=step}
- return out;
-}
-async function loadImportedOpponent(team){
- let builder=sb.from("pff_raw_plays").select("pff_game_id,pff_play_id,game_date,season,week,offense_code,defense_code,focus_team_code,is_scheme_reference,scheme_reference_for,scheme_coach,raw_data").eq("dataset_side","opponent_defense");
- if(team.slug==="uab") builder=builder.eq("scheme_reference_for","uab");
- else {
-  const code=PFF_DEFENSE_CODE_BY_SLUG[team.slug]||team.code;
-  if(!code)return [];
-  builder=builder.eq("focus_team_code",code);
- }
- return await fetchAllRaw(builder);
-}
-async function loadLegacyFAU(){
+
+async function init(){
+ $("status").innerHTML="<span>Loading Florida Atlantic analytics...</span>";
+
+ // Primary public loader: use the existing published share RPC internally.
+ // Coaches do not need a token in the URL.
  try{
   const {data:p,error:e1}=await sb.rpc("get_shared_project",{token:DEFAULT_PUBLIC_SHARE_TOKEN});
   const {data:pl,error:e2}=await sb.rpc("get_shared_plays",{token:DEFAULT_PUBLIC_SHARE_TOKEN});
-  if(!e1&&!e2&&p?.length&&pl?.length)return {project:p[0],plays:enrichPlays(pl||[])};
- }catch(e){}
- return null;
-}
-async function init(){
- const bound=window.platformBindOpponent?await platformBindOpponent($("opponentHost"),()=>location.reload()):null;
- const team=bound?.current||{slug:"florida-atlantic",name:"Florida Atlantic",code:"FAU"};
- $("status").innerHTML=`<span>Loading ${team.name} opponent defense...</span>`;
- try{
-  const raw=await loadImportedOpponent(team);
-  if(raw.length){
-   currentProject={name:team.slug==="uab"?"UAB · Todd Grantham Scheme Reference":`${team.name} Defense`,subject_team:team.name,season:raw[0]?.season||2025};
-   plays=enrichPlays(raw.map(pffToPlay));filtered=[...plays];readOnly=true;resetFilters();renderDashboard();renderRoot();
-   const games=new Set(raw.map(x=>x.pff_game_id)).size;
-   $("publicNotice").textContent=team.slug==="uab"?`Open staff access · ${plays.length.toLocaleString()} Oklahoma State plays · ${games} Todd Grantham games used for UAB`:`Open staff access · ${plays.length.toLocaleString()} ${team.name} defensive plays · ${games} games`;
+
+  if(!e1&&!e2&&p?.length){
+   currentProject=p[0];
+   plays=enrichPlays(pl||[]);
+   filtered=[...plays];
+   readOnly=true;
+   resetFilters();
+   renderDashboard();
+   renderRoot();
    return;
   }
-  // FAU can still use the previously published charted project while migration is completed.
-  if(team.slug==="florida-atlantic"){
-   const legacy=await loadLegacyFAU();
-   if(legacy){currentProject=legacy.project;plays=legacy.plays;filtered=[...plays];readOnly=true;resetFilters();renderDashboard();renderRoot();$("publicNotice").textContent="Open staff access · Florida Atlantic legacy published project";return}
-  }
-  throw new Error(`No imported opponent-defense plays found for ${team.name}.`);
  }catch(err){
-  $("dashboard").classList.remove("hide");
-  $("dashboard").innerHTML=`<div class="public-error"><h2>${team.name} analytics could not be loaded</h2><p>${err.message||err}</p><p class="note">Confirm the opponent-defense PFF master file is imported and public read access is enabled for pff_raw_plays.</p></div>`;
-  $("status").innerHTML="<span>Analytics unavailable</span>";
+  console.warn("Internal share loader failed:",err);
  }
+
+ // Secondary fallback: newest published project, when anon RLS allows it.
+ const {data:projects,error:projectError}=await sb
+  .from("projects")
+  .select("*")
+  .eq("published",true)
+  .order("created_at",{ascending:false})
+  .limit(1);
+
+ if(!projectError&&projects?.length){
+  currentProject=projects[0];
+  const {data:pl,error:playsError}=await sb
+   .from("plays")
+   .select("*")
+   .eq("project_id",currentProject.id);
+
+  if(!playsError){
+   plays=enrichPlays(pl||[]);
+   filtered=[...plays];
+   readOnly=true;
+   resetFilters();
+   renderDashboard();
+   renderRoot();
+   return;
+  }
+ }
+
+ $("dashboard").classList.remove("hide");
+ $("dashboard").innerHTML=`<div class="public-error">
+  <h2>Florida Atlantic analytics could not be loaded</h2>
+  <p>The public share RPC and published-project fallback were both unavailable.</p>
+  <p class="note">The app no longer requires a login or URL token. Confirm that the original Florida Atlantic project remains published and that the existing get_shared_project/get_shared_plays RPC functions are still active in Supabase.</p>
+ </div>`;
+ $("status").innerHTML="<span>Analytics unavailable</span>";
 }
 
 function renderRoot(){
